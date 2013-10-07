@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BookView : UIView
+@interface BookView : UIView{
+@private
+    BOOL _isMoving;
+    CGPoint startTouch;
+}
 
 - (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls;
 @end

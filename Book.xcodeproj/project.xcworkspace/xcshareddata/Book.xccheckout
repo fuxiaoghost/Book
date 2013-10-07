@@ -5,13 +5,15 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>2D8056C3-3ED3-44B3-A1C5-F047EC246401</string>
+	<string>C832FF21-1268-4384-93BB-6DEAB8C6BA11</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Book</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>C661AA56-B45D-4FCB-8C78-F0415851CDBB</key>
 		<string>https://dawn-together.googlecode.com/svn/trunk</string>
+		<key>C6B44329-23B6-4B61-81FC-33652519A7B5</key>
+		<string>https://github.com/fuxiaoghost/Book.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Book/Book.xcodeproj/project.xcworkspace</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>C661AA56-B45D-4FCB-8C78-F0415851CDBB</key>
 		<string>../../..</string>
+		<key>C6B44329-23B6-4B61-81FC-33652519A7B5</key>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectRepositoryRootDictionary</key>
 	<dict>
@@ -26,13 +30,21 @@
 		<string>https://dawn-together.googlecode.com/svn</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://dawn-together.googlecode.com/svn/trunk/Book/Book.xcodeproj</string>
+	<string>https://github.com/fuxiaoghost/Book.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
 	<string>C661AA56-B45D-4FCB-8C78-F0415851CDBB</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>C6B44329-23B6-4B61-81FC-33652519A7B5</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Book</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>
