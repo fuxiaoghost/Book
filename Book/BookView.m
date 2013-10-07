@@ -126,7 +126,7 @@
         transform3D.m34 = -1.0f/1500;			//透视效果
         transform3D = CATransform3DRotate(transform3D,-VIEW_ANGLE * (i + 1)/self.rightPhotoArray.count, 0, 1, 0);
         transform3D = CATransform3DScale(transform3D, MIN_SCALE + (1 - MIN_SCALE) * (i + 1) / self.rightPhotoArray.count, MIN_SCALE + (1 - MIN_SCALE) * (i + 1) / self.rightPhotoArray.count, 1);
-        transform3D = CATransform3DTranslate(transform3D,(VIEW_MOVE - VIEW_MOVE * (i + 1)*(i + 1)/(self.leftPhotoArray.count * self.leftPhotoArray.count)), 0, 0);
+        transform3D = CATransform3DTranslate(transform3D,(VIEW_MOVE - VIEW_MOVE * (i + 1)*(i + 1)/(self.rightPhotoArray.count * self.rightPhotoArray.count)), 0, 0);
         
         contentView.layer.transform = transform3D;
     }
@@ -198,17 +198,49 @@
        
     }else if (recoginzer.state == UIGestureRecognizerStateEnded){
         float move = [self touchLengthMoveTo:touchPoint];
+        NSLog(@"%f",move);
         if (move > VIEW_MOVE_END){
             // 向右滑动
-            [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-                
-            } completion:^(BOOL finished) {
-                _isMoving = NO;
-
-                
+            UIView *contentView = (UIView *)[self.leftPhotoArray lastObject];
+            contentView.layer.anchorPoint = CGPointMake(0.0f, 0.5f);
+            contentView.frame = CGRectMake(self.frame.size.width/2, 0, self.frame.size.width/2, self.frame.size.height);
+            [self.rightPhotoArray addObject:contentView];
+            [self.leftPhotoArray removeLastObject];
+            
+            NSInteger index = self.leftPhotoArray.count - 1;
+            if (index >= self.urlArray.count) {
+                index = index - self.urlArray.count;
+            }
+            UIImageView *imageView = (UIImageView *)[[contentView subviews] objectAtIndex:0];
+            [imageView setImageWithURL:[NSURL URLWithString:[self.urlArray objectAtIndex:index]] options:SDWebImageRetryFailed progress:YES];
+            
+            imageView.frame = CGRectMake(-self.frame.size.width/2, 0, self.frame.size.width, self.frame.size.height);
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                [self resetLeftViews];
+                [self resetRightViews];
             }];
         }else if(move < -VIEW_MOVE_END){
             // 向左滑动
+            UIView *contentView = (UIView *)[self.rightPhotoArray lastObject];
+            contentView.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
+            contentView.frame = CGRectMake(0, 0, self.frame.size.width/2, self.frame.size.height);
+            [self.leftPhotoArray addObject:contentView];
+            [self.rightPhotoArray removeLastObject];
+            
+            NSInteger index = self.rightPhotoArray.count - 1;
+            if (index >= self.urlArray.count) {
+                index = index - self.urlArray.count;
+            }
+            UIImageView *imageView = (UIImageView *)[[contentView subviews] objectAtIndex:0];
+            [imageView setImageWithURL:[NSURL URLWithString:[self.urlArray objectAtIndex:index]] options:SDWebImageRetryFailed progress:YES];
+            
+            imageView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                [self resetLeftViews];
+                [self resetRightViews];
+            }];
         }
         else{
             [UIView animateWithDuration:0.2 animations:^{
