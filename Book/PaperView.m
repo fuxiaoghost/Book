@@ -53,7 +53,7 @@
             [leftcell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
         }
 
-        float zDistance = 2 * frame.size.width/2 * tanf(VIEW_ANGLE);
+        float zDistance = sinf(VIEW_ANGLE) * frame.size.width;
         for (int i = 0; i < self.photoArray.count; i+=2) {
             PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
             PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
@@ -61,14 +61,14 @@
             CATransform3D lTransform3D_0 = CATransform3DMakeRotation(M_PI - VIEW_ANGLE, 0, 1, 0);
             CATransform3D lTransform3D_1 = CATransform3DMakeTranslation(0, 0, -i*zDistance/2);
             CATransform3D lTransform3D_2 = CATransform3DMakeRotation(-M_PI_2, 0, 1, 0);
-            CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(-200, 0, -400);
+            CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, -200);
             CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
             leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, 500);
             
             CATransform3D rTransform3D_0 = CATransform3DMakeRotation(VIEW_ANGLE, 0, 1, 0);
             CATransform3D rTransform3D_1 = CATransform3DMakeTranslation(0, 0, -i*zDistance/2);
             CATransform3D rTransform3D_2 = CATransform3DMakeRotation(-M_PI_2, 0, 1, 0);
-            CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(-200, 0, -400);
+            CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, -200);
             CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
             rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, 500);
         }
