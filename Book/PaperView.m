@@ -12,7 +12,7 @@
 #import "UIImageView+WebCache.h"
 #import "CATransform3DPerspect.h"
 
-#define VIEW_ANGLE (M_PI_4/4)
+#define VIEW_ANGLE (M_PI_4/8)
 
 
 @interface PaperView()
@@ -33,6 +33,7 @@
     if (self) {
         self.urlArray = urls;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
+
         for (int i = urls.count - 1; i >= 0; i--) {
             // rightcell
             PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
@@ -60,17 +61,20 @@
             
             CATransform3D lTransform3D_0 = CATransform3DMakeRotation(M_PI - VIEW_ANGLE, 0, 1, 0);
             CATransform3D lTransform3D_1 = CATransform3DMakeTranslation(0, 0, -i*zDistance/2);
-            CATransform3D lTransform3D_2 = CATransform3DMakeRotation(-M_PI_2, 0, 1, 0);
-            CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, -200);
+            CATransform3D lTransform3D_2 = CATransform3DMakeRotation(-M_PI_2+M_PI_4, 0, 1, 0);
+            if (i == 0) {
+                lTransform3D_2 = CATransform3DMakeRotation(-M_PI_2 - M_PI_4, 0, 1, 0);
+            }
+            CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, -400);
             CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
-            leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, 500);
+            leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, 1500);
             
             CATransform3D rTransform3D_0 = CATransform3DMakeRotation(VIEW_ANGLE, 0, 1, 0);
             CATransform3D rTransform3D_1 = CATransform3DMakeTranslation(0, 0, -i*zDistance/2);
-            CATransform3D rTransform3D_2 = CATransform3DMakeRotation(-M_PI_2, 0, 1, 0);
-            CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, -200);
+            CATransform3D rTransform3D_2 = CATransform3DMakeRotation(-M_PI_2+M_PI_4, 0, 1, 0);
+            CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, -400);
             CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
-            rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, 500);
+            rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, 1500);
         }
     }
     return self;

@@ -6,6 +6,9 @@
 //  Copyright (c) 2013年 Dawn. All rights reserved.
 //
 
+#define SCREEN_WIDTH			([[UIScreen mainScreen] bounds].size.width)         // Screen width
+#define SCREEN_HEIGHT			([[UIScreen mainScreen] bounds].size.height)        // Screen height
+
 #import "RootViewController.h"
 #import "PaperView.h"
 
@@ -29,7 +32,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
 	// Do any additional setup after loading the view.
-    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(10, 20, 568-20, 260) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
+    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(10, 20, SCREEN_HEIGHT-20, SCREEN_WIDTH-40) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
     paperView.backgroundColor = [UIColor clearColor];
     
     [self.view addSubview:paperView];
