@@ -7,7 +7,7 @@
 //
 
 #import "RootViewController.h"
-#import "BookView.h"
+#import "PaperView.h"
 
 @interface RootViewController ()
 
@@ -29,11 +29,12 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
 	// Do any additional setup after loading the view.
-    BookView *bookView = [[BookView alloc] initWithFrame:CGRectMake(10, 20, 568 - 20, 280) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
-    bookView.backgroundColor = [UIColor clearColor];
+    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(10, 20, 568-20, 260) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
+    paperView.backgroundColor = [UIColor clearColor];
     
-    [self.view addSubview:bookView];
-    [bookView release];
+    [self.view addSubview:paperView];
+    [paperView release];
+    
 }
 
 - (void)didReceiveMemoryWarning

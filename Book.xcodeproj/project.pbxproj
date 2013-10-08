@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79D7AD861803E25900EF7C0F /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D7AD851803E25900EF7C0F /* CoreImage.framework */; };
+		79D7AD881803E26D00EF7C0F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D7AD871803E26D00EF7C0F /* QuartzCore.framework */; };
+		79D7AD8A1803E28A00EF7C0F /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D7AD891803E28A00EF7C0F /* ImageIO.framework */; };
+		79D7AD8F1803E29C00EF7C0F /* PaperCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D7AD8C1803E29C00EF7C0F /* PaperCell.m */; };
+		79D7AD901803E29C00EF7C0F /* PaperView.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D7AD8E1803E29C00EF7C0F /* PaperView.m */; };
+		79D7AD9318041BC000EF7C0F /* CATransform3DPerspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */; };
 		DD8DD07E18016AF300FB2E48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD07D18016AF300FB2E48 /* Foundation.framework */; };
 		DD8DD08018016AF300FB2E48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD07F18016AF300FB2E48 /* CoreGraphics.framework */; };
 		DD8DD08218016AF300FB2E48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD08118016AF300FB2E48 /* UIKit.framework */; };
@@ -14,11 +20,6 @@
 		DD8DD08A18016AF300FB2E48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD08918016AF300FB2E48 /* main.m */; };
 		DD8DD08E18016AF300FB2E48 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD08D18016AF300FB2E48 /* AppDelegate.m */; };
 		DD8DD09018016AF300FB2E48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD08F18016AF300FB2E48 /* Images.xcassets */; };
-		DD8DD09718016AF300FB2E48 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD09618016AF300FB2E48 /* XCTest.framework */; };
-		DD8DD09818016AF300FB2E48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD07D18016AF300FB2E48 /* Foundation.framework */; };
-		DD8DD09918016AF300FB2E48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD08118016AF300FB2E48 /* UIKit.framework */; };
-		DD8DD0A118016AF300FB2E48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD09F18016AF300FB2E48 /* InfoPlist.strings */; };
-		DD8DD0A318016AF300FB2E48 /* BookTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0A218016AF300FB2E48 /* BookTests.m */; };
 		DD8DD0AE18016C9900FB2E48 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0AD18016C9900FB2E48 /* RootViewController.m */; };
 		DD8DD0B118016ED400FB2E48 /* BookView.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0B018016ED400FB2E48 /* BookView.m */; };
 		DD8DD0C518016F1400FB2E48 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0B418016F1400FB2E48 /* SDImageCache.m */; };
@@ -33,17 +34,16 @@
 		DD8DD0D3180173FC00FB2E48 /* photos.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD0D2180173FC00FB2E48 /* photos.plist */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		DD8DD09A18016AF300FB2E48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DD8DD07218016AF300FB2E48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DD8DD07918016AF300FB2E48;
-			remoteInfo = Book;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
+		79D7AD851803E25900EF7C0F /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		79D7AD871803E26D00EF7C0F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		79D7AD891803E28A00EF7C0F /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		79D7AD8B1803E29C00EF7C0F /* PaperCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaperCell.h; sourceTree = "<group>"; };
+		79D7AD8C1803E29C00EF7C0F /* PaperCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PaperCell.m; sourceTree = "<group>"; };
+		79D7AD8D1803E29C00EF7C0F /* PaperView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaperView.h; sourceTree = "<group>"; };
+		79D7AD8E1803E29C00EF7C0F /* PaperView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PaperView.m; sourceTree = "<group>"; };
+		79D7AD9118041BC000EF7C0F /* CATransform3DPerspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CATransform3DPerspect.h; sourceTree = "<group>"; };
+		79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CATransform3DPerspect.m; sourceTree = "<group>"; };
 		DD8DD07A18016AF300FB2E48 /* Book.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Book.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD8DD07D18016AF300FB2E48 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DD8DD07F18016AF300FB2E48 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -55,11 +55,6 @@
 		DD8DD08C18016AF300FB2E48 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DD8DD08D18016AF300FB2E48 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		DD8DD08F18016AF300FB2E48 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		DD8DD09518016AF300FB2E48 /* BookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD8DD09618016AF300FB2E48 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		DD8DD09E18016AF300FB2E48 /* BookTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BookTests-Info.plist"; sourceTree = "<group>"; };
-		DD8DD0A018016AF300FB2E48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		DD8DD0A218016AF300FB2E48 /* BookTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BookTests.m; sourceTree = "<group>"; };
 		DD8DD0AC18016C9900FB2E48 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		DD8DD0AD18016C9900FB2E48 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		DD8DD0AF18016ED400FB2E48 /* BookView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookView.h; sourceTree = "<group>"; };
@@ -94,19 +89,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79D7AD8A1803E28A00EF7C0F /* ImageIO.framework in Frameworks */,
+				79D7AD881803E26D00EF7C0F /* QuartzCore.framework in Frameworks */,
+				79D7AD861803E25900EF7C0F /* CoreImage.framework in Frameworks */,
 				DD8DD08018016AF300FB2E48 /* CoreGraphics.framework in Frameworks */,
 				DD8DD08218016AF300FB2E48 /* UIKit.framework in Frameworks */,
 				DD8DD07E18016AF300FB2E48 /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DD8DD09218016AF300FB2E48 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DD8DD09718016AF300FB2E48 /* XCTest.framework in Frameworks */,
-				DD8DD09918016AF300FB2E48 /* UIKit.framework in Frameworks */,
-				DD8DD09818016AF300FB2E48 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +105,6 @@
 			isa = PBXGroup;
 			children = (
 				DD8DD08318016AF300FB2E48 /* Book */,
-				DD8DD09C18016AF300FB2E48 /* BookTests */,
 				DD8DD07C18016AF300FB2E48 /* Frameworks */,
 				DD8DD07B18016AF300FB2E48 /* Products */,
 			);
@@ -127,7 +114,6 @@
 			isa = PBXGroup;
 			children = (
 				DD8DD07A18016AF300FB2E48 /* Book.app */,
-				DD8DD09518016AF300FB2E48 /* BookTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -135,10 +121,12 @@
 		DD8DD07C18016AF300FB2E48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				79D7AD891803E28A00EF7C0F /* ImageIO.framework */,
+				79D7AD871803E26D00EF7C0F /* QuartzCore.framework */,
+				79D7AD851803E25900EF7C0F /* CoreImage.framework */,
 				DD8DD07D18016AF300FB2E48 /* Foundation.framework */,
 				DD8DD07F18016AF300FB2E48 /* CoreGraphics.framework */,
 				DD8DD08118016AF300FB2E48 /* UIKit.framework */,
-				DD8DD09618016AF300FB2E48 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -157,6 +145,12 @@
 				DD8DD0AD18016C9900FB2E48 /* RootViewController.m */,
 				DD8DD0AF18016ED400FB2E48 /* BookView.h */,
 				DD8DD0B018016ED400FB2E48 /* BookView.m */,
+				79D7AD8B1803E29C00EF7C0F /* PaperCell.h */,
+				79D7AD8C1803E29C00EF7C0F /* PaperCell.m */,
+				79D7AD8D1803E29C00EF7C0F /* PaperView.h */,
+				79D7AD8E1803E29C00EF7C0F /* PaperView.m */,
+				79D7AD9118041BC000EF7C0F /* CATransform3DPerspect.h */,
+				79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */,
 				DD8DD08F18016AF300FB2E48 /* Images.xcassets */,
 				DD8DD08418016AF300FB2E48 /* Supporting Files */,
 			);
@@ -171,24 +165,6 @@
 				DD8DD08918016AF300FB2E48 /* main.m */,
 				DD8DD08B18016AF300FB2E48 /* Book-Prefix.pch */,
 				DD8DD0D2180173FC00FB2E48 /* photos.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		DD8DD09C18016AF300FB2E48 /* BookTests */ = {
-			isa = PBXGroup;
-			children = (
-				DD8DD0A218016AF300FB2E48 /* BookTests.m */,
-				DD8DD09D18016AF300FB2E48 /* Supporting Files */,
-			);
-			path = BookTests;
-			sourceTree = "<group>";
-		};
-		DD8DD09D18016AF300FB2E48 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				DD8DD09E18016AF300FB2E48 /* BookTests-Info.plist */,
-				DD8DD09F18016AF300FB2E48 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -238,24 +214,6 @@
 			productReference = DD8DD07A18016AF300FB2E48 /* Book.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DD8DD09418016AF300FB2E48 /* BookTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DD8DD0A918016AF300FB2E48 /* Build configuration list for PBXNativeTarget "BookTests" */;
-			buildPhases = (
-				DD8DD09118016AF300FB2E48 /* Sources */,
-				DD8DD09218016AF300FB2E48 /* Frameworks */,
-				DD8DD09318016AF300FB2E48 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DD8DD09B18016AF300FB2E48 /* PBXTargetDependency */,
-			);
-			name = BookTests;
-			productName = BookTests;
-			productReference = DD8DD09518016AF300FB2E48 /* BookTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -283,7 +241,6 @@
 			projectRoot = "";
 			targets = (
 				DD8DD07918016AF300FB2E48 /* Book */,
-				DD8DD09418016AF300FB2E48 /* BookTests */,
 			);
 		};
 /* End PBXProject section */
@@ -296,14 +253,6 @@
 				DD8DD0D3180173FC00FB2E48 /* photos.plist in Resources */,
 				DD8DD08818016AF300FB2E48 /* InfoPlist.strings in Resources */,
 				DD8DD09018016AF300FB2E48 /* Images.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DD8DD09318016AF300FB2E48 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DD8DD0A118016AF300FB2E48 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,40 +276,19 @@
 				DD8DD0CA18016F1400FB2E48 /* UIButton+WebCache.m in Sources */,
 				DD8DD0C718016F1400FB2E48 /* SDWebImageDownloader.m in Sources */,
 				DD8DD0C518016F1400FB2E48 /* SDImageCache.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DD8DD09118016AF300FB2E48 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DD8DD0A318016AF300FB2E48 /* BookTests.m in Sources */,
+				79D7AD8F1803E29C00EF7C0F /* PaperCell.m in Sources */,
+				79D7AD901803E29C00EF7C0F /* PaperView.m in Sources */,
+				79D7AD9318041BC000EF7C0F /* CATransform3DPerspect.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		DD8DD09B18016AF300FB2E48 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DD8DD07918016AF300FB2E48 /* Book */;
-			targetProxy = DD8DD09A18016AF300FB2E48 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		DD8DD08618016AF300FB2E48 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				DD8DD08718016AF300FB2E48 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		DD8DD09F18016AF300FB2E48 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				DD8DD0A018016AF300FB2E48 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -372,7 +300,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -401,10 +329,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
 		};
@@ -412,7 +341,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -435,16 +364,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;
 		};
 		DD8DD0A718016AF300FB2E48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -458,6 +389,7 @@
 		DD8DD0A818016AF300FB2E48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -465,48 +397,6 @@
 				INFOPLIST_FILE = "Book/Book-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		DD8DD0AA18016AF300FB2E48 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Book.app/Book";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Book/Book-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "BookTests/BookTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
-			};
-			name = Debug;
-		};
-		DD8DD0AB18016AF300FB2E48 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Book.app/Book";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Book/Book-Prefix.pch";
-				INFOPLIST_FILE = "BookTests/BookTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
 		};
@@ -527,15 +417,6 @@
 			buildConfigurations = (
 				DD8DD0A718016AF300FB2E48 /* Debug */,
 				DD8DD0A818016AF300FB2E48 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DD8DD0A918016AF300FB2E48 /* Build configuration list for PBXNativeTarget "BookTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DD8DD0AA18016AF300FB2E48 /* Debug */,
-				DD8DD0AB18016AF300FB2E48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

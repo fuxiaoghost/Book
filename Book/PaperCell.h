@@ -14,6 +14,10 @@ typedef enum {
     PaperCellRight
 }PaperCellOrientation;
 
-@interface PaperCell : UIView
+@interface PaperCell : UIView{
+@private
+    UIImageView *photoView;
+}
+@property (nonatomic,readonly) UIImageView *photoView;
 - (id)initWithFrame:(CGRect)frame orientation:(PaperCellOrientation)orientation;
 @end

@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PaperView : UIView
+@interface PaperView : UIView{
+@private
+
+}
 - (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls;
 @end
