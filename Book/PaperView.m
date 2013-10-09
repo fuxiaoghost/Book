@@ -22,11 +22,11 @@
 #define INTERFACE_FACEDOWN              ([[UIApplication sharedApplication]statusBarOrientation] == UIDeviceOrientationFaceDown)
 
 #define KEY_WINDOW  [[UIApplication sharedApplication]keyWindow]
-#define VIEW_MIN_ANGLE (M_PI_4/8)
+#define VIEW_MIN_ANGLE (M_PI_4/6)
 #define VIEW_MAX_ANGLE (M_PI_4)
 #define VIEW_Z_DISTANCE -400                    // 沿z轴移动距离
 #define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
-#define VIEW_ALPHA 0.4
+#define VIEW_ALPHA 0.6
 
 @interface PaperView()
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
@@ -146,13 +146,6 @@
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
-        if (index <= pageIndex) {
-            rightcell.markView.alpha = VIEW_ALPHA;
-            leftcell.markView.alpha = 0;
-        }else{
-            leftcell.markView.alpha = VIEW_ALPHA;
-            rightcell.markView.alpha = 0;
-        }
         
         if (index == pageIndex) {
             rightcell.markView.alpha = 0;
@@ -187,8 +180,14 @@
     float pageRemainder = 0;
     if (move > 0) {
         pageRemainder = move - moveSensitivity * ((int)(move/moveSensitivity));
+        if (pageRemainder > moveSensitivity/2) {
+            currentIndex++;
+        }
     }else if(move < 0){
         pageRemainder = (-move) + moveSensitivity * ((int)(move/moveSensitivity));
+        if (pageRemainder > moveSensitivity/2) {
+            currentIndex--;
+        }
     }
     
     // 下一页的预测值
@@ -232,6 +231,7 @@
         }else{
             lNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
+        
         lTransform3D_2 = CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
         
         CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
@@ -275,12 +275,21 @@
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
-        if (index <= pageIndex) {
-            rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
-            leftcell.markView.alpha = 0;
-        }else{
-            leftcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
-            rightcell.markView.alpha = 0;
+
+        if (move > 0) {
+            if (index == pageIndex) {
+                rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
+            }
+            if (index == pageIndex + 1) {
+                leftcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
+            }
+        }else if(move < 0){
+            if (index == pageIndex) {
+                leftcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
+            }
+            if (index == pageIndex - 1) {
+                rightcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
+            }
         }
     }
 
