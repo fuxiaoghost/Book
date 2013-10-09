@@ -32,7 +32,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
 	// Do any additional setup after loading the view.
-    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(10, 20, SCREEN_HEIGHT-20, SCREEN_WIDTH-40) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
+    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(10, 0, SCREEN_HEIGHT-20, SCREEN_WIDTH-40) photoUrls:[NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photos" ofType:@"plist"]]];
     paperView.backgroundColor = [UIColor clearColor];
     
     [self.view addSubview:paperView];

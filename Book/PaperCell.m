@@ -15,6 +15,8 @@
 
 @implementation PaperCell
 @synthesize photoView;
+@synthesize tipsLbl;
+@synthesize markView;
 
 - (void) dealloc{
     [super dealloc];
@@ -32,11 +34,23 @@
         self.layer.doubleSided = NO;
         self.backgroundColor = [UIColor whiteColor];
         
+        tipsLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 60, 40)];
+        [self addSubview:tipsLbl];
+        [tipsLbl release];
+        
         if (orientation == PaperCellLeft) {
             photoView.frame = CGRectMake(0, 0, frame.size.width * 2, frame.size.height);
+            tipsLbl.frame = CGRectMake(0, 0, 60, 40);
         }else if(orientation == PaperCellRight){
             photoView.frame = CGRectMake(-frame.size.width, 0, frame.size.width * 2, frame.size.height);
+            tipsLbl.frame = CGRectMake(frame.size.width - 60, 0, 60, 40);
         }
+        
+        markView = [[UIView alloc] initWithFrame:self.bounds];
+        markView.backgroundColor = [UIColor blackColor];
+        markView.alpha = 0;
+        [self addSubview:markView];
+        [markView release];
     }
     return self;
 }
