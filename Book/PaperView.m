@@ -26,7 +26,7 @@
 #define VIEW_MAX_ANGLE (M_PI_4)
 #define VIEW_Z_DISTANCE -400                    // 沿z轴移动距离
 #define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
-#define VIEW_ALPHA 0.6
+#define VIEW_ALPHA 0.4
 
 @interface PaperView()
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
@@ -102,10 +102,8 @@
         float lCurrentDistance = 0;
         if (index <= pageIndex) {
             lCurrentDistance = (pageIndex - index) * zDistance;
-            //leftcell.markView.alpha = 0;
         }else{
             lCurrentDistance = -(index - pageIndex) * zDistance;
-           // leftcell.markView.alpha = VIEW_ALPHA;
         }
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
         
@@ -131,10 +129,8 @@
         float rCurrentDistance = 0;
         if (index < pageIndex) {
             rCurrentDistance = (pageIndex - index) * zDistance;
-            //rightcell.markView.alpha = VIEW_ALPHA;
         }else{
             rCurrentDistance = -(index - pageIndex) * zDistance;
-            //rightcell.markView.alpha = 0;
         }
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance);
         //rTrans_2
@@ -149,6 +145,19 @@
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        
+        if (index <= pageIndex) {
+            rightcell.markView.alpha = VIEW_ALPHA;
+            leftcell.markView.alpha = 0;
+        }else{
+            leftcell.markView.alpha = VIEW_ALPHA;
+            rightcell.markView.alpha = 0;
+        }
+        
+        if (index == pageIndex) {
+            rightcell.markView.alpha = 0;
+            leftcell.markView.alpha = 0;
+        }
     }
 }
 
@@ -199,10 +208,8 @@
         float lCurrentDistance = 0;
         if (index <= pageIndex) {
             lCurrentDistance = (pageIndex - index) * zDistance;
-            //leftcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
         }else{
             lCurrentDistance = -(index - pageIndex) * zDistance;
-            //leftcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
         }
         if (index <= nextPageIndex) {
             lNextDistance = (nextPageIndex - index) * zDistance;
@@ -240,10 +247,8 @@
         float rCurrentDistance = 0;
         if (index < pageIndex) {
             rCurrentDistance = (pageIndex - index) * zDistance;
-            //rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
         }else{
             rCurrentDistance = -(index - pageIndex) * zDistance;
-            //rightcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
         }
         if (index < nextPageIndex) {
             rNextDistance = (nextPageIndex - index) * zDistance;
@@ -269,6 +274,14 @@
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        
+        if (index <= pageIndex) {
+            rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
+            leftcell.markView.alpha = 0;
+        }else{
+            leftcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
+            rightcell.markView.alpha = 0;
+        }
     }
 
 }
