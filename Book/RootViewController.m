@@ -46,4 +46,20 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark -
+#pragma mark UIViewControllerRotation
+- (BOOL)shouldAutorotate{
+    return YES;
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation{
+    return YES;
+}
+
+
+- (NSUInteger)supportedInterfaceOrientations{
+    return UIInterfaceOrientationMaskAll;
+}
+
+
 @end
