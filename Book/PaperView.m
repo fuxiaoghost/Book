@@ -202,6 +202,16 @@
     
     // 下一页的预测值
     NSInteger nextPageIndex = move > 0 ? (pageIndex + 1):(pageIndex - 1);
+    float x = 0,z = 0,x_ = 0,z_ = 0;
+    float theta = 2 * (VIEW_MIN_ANGLE + VIEW_MAX_ANGLE) - M_PI - (VIEW_MAX_ANGLE + VIEW_MAX_ANGLE) * pageRemainder/moveSensitivity;
+    float alpha = (VIEW_MAX_ANGLE + VIEW_MAX_ANGLE) * pageRemainder/moveSensitivity;
+    
+    float d = zDistance * pageRemainder/moveSensitivity;
+    x = sinf(theta) * d;
+    z = cosf(theta) * d;
+    x_ = sinf(alpha) * (zDistance - d);
+    z_ = cosf(alpha) * (zDistance - d);
+    
     
     // 夹页间距
     for (int i = 0; i < self.photoArray.count; i+=2) {
@@ -241,19 +251,35 @@
             lNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
         
-    
+       
+        
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance + (lNextDistance - lCurrentDistance) * pageRemainder/moveSensitivity);
+        
+        BOOL animated = NO;
+        if (lNextAngle == lCurrentAngle) {
+            if (move > 0 && index == pageIndex) {
+                lTransform3D_1 = CATransform3DMakeTranslation(-x, 0, -z);
+                if (abs(-x) < 1) {
+                    animated = YES;
+                }
+                animated = YES;
+            }else if(move < 0 && index == pageIndex - 1){
+                lTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_);
+                if (abs(x_)<1) {
+                    animated = YES;
+                }
+            }
+        }
        
         lTransform3D_2= CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
         
         
         CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
-        CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
-        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
-        if (lNextAngle - lCurrentAngle != 0) {
-            NSLog(@"x:%f,y:%f",leftcell.layer.position.x,leftcell.layer.position.y);
-        }
+        CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
+        
+        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+
         
         //=====================
         
@@ -291,6 +317,16 @@
         
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance + (rNextDistance - rCurrentDistance) * pageRemainder/moveSensitivity);
         rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle + (rNextAngle - rCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
+        
+        
+        if (rNextAngle == rCurrentAngle) {
+            if (move > 0 && index == pageIndex + 1) {
+                rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_);
+            }else if(move < 0 && index == pageIndex){
+                rTransform3D_1 = CATransform3DMakeTranslation(-x, 0, z);
+            }
+        }
+        
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
