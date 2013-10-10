@@ -50,7 +50,7 @@
         self.urlArray = urls;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
         zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
-        moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width + zDistance;
+        moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width;
         moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
 
         for (int i = urls.count - 1; i >= 0; i--) {
@@ -80,8 +80,18 @@
         UIPanGestureRecognizer *panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self
                                                                                      action:@selector(paningGestureReceive:)]autorelease];
         [self addGestureRecognizer:panGesture];
+        
+        UIButton * nextBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        nextBtn.frame = CGRectMake(frame.size.width - 100, frame.size.height - 40, 100, 40);
+        [nextBtn addTarget:self action:@selector(nextBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:nextBtn];
     }
     return self;
+}
+
+- (void) nextBtnClick:(id)sender{
+    pageIndex++;
+    [self resetViewsAnimated:CGPointMake(0, 0)];
 }
 
 - (void) resetViews{
@@ -215,7 +225,6 @@
         }else{
             lNextDistance = -(index - nextPageIndex) * zDistance;
         }
-        lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance + (lNextDistance - lCurrentDistance) * pageRemainder/moveSensitivity);
         
         // lTrans_2
         CATransform3D lTransform3D_2;
@@ -232,11 +241,19 @@
             lNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
         
-        lTransform3D_2 = CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
+    
+        lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance + (lNextDistance - lCurrentDistance) * pageRemainder/moveSensitivity);
+       
+        lTransform3D_2= CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
+        
         
         CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
         leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        
+        if (lNextAngle - lCurrentAngle != 0) {
+            NSLog(@"x:%f,y:%f",leftcell.layer.position.x,leftcell.layer.position.y);
+        }
         
         //=====================
         
@@ -255,7 +272,7 @@
         }else{
             rNextDistance = -(index - nextPageIndex) * zDistance;
         }
-        rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance + (rNextDistance - rCurrentDistance) * pageRemainder/moveSensitivity);
+        
         //rTrans_2
         CATransform3D rTransform3D_2;
         float rNextAngle = 0;
@@ -270,6 +287,9 @@
         }else{
             rNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
+
+        
+        rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance + (rNextDistance - rCurrentDistance) * pageRemainder/moveSensitivity);
         rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle + (rNextAngle - rCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
