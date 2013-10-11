@@ -23,5 +23,5 @@
     float scope;                // 
 }
 @property (nonatomic,assign) NSInteger pageIndex;
-- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls;
+- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls coverImage:(UIImage *)coverImage backImage:(UIImage *)backImage;
 @end

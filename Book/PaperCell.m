@@ -32,6 +32,7 @@
         [self addSubview:photoView];
         self.clipsToBounds = YES;
         self.layer.doubleSided = NO;
+        photoView.backgroundColor = [UIColor whiteColor];
         self.backgroundColor = [UIColor whiteColor];
         
         tipsLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 60, 40)];

@@ -34,25 +34,30 @@
 @interface PaperView()
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
 @property (nonatomic,retain) NSArray *urlArray;                     // 图片地址
+@property (nonatomic,retain) NSMutableArray *layerArray;
 @end
 
 @implementation PaperView
 @synthesize pageIndex;
 @synthesize photoArray;
+@synthesize layerArray;
 @synthesize urlArray;
 
 - (void) dealloc{
     self.photoArray = nil;
     self.urlArray = nil;
+    self.layerArray = nil;
     [super dealloc];
 }
 
-- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls{
+- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls coverImage:(UIImage *)coverImage backImage:(UIImage *)backImage{
     self = [super initWithFrame:frame];
     if (self) {
         self.urlArray = urls;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
+        self.layerArray = [NSMutableArray arrayWithCapacity:0];
         
+        // 预先计算数据
         zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
         moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width;
         moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
@@ -64,51 +69,99 @@
             PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
             rightCell.layer.anchorPoint = CGPointMake(0, 0.5);
             rightCell.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
-            [self addSubview:rightCell];
-            [rightCell release];
+            if (i == urls.count - 1) {
+                // backImage
+                CATransformLayer *backLayer = [[CATransformLayer alloc] init];
+                backLayer.anchorPoint = CGPointMake(0, 0.5);
+                backLayer.frame =  CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
+                rightCell.layer.anchorPoint = CGPointMake(0.5, 0.5);
+                rightCell.layer.frame = backLayer.bounds;
+                [backLayer addSublayer:rightCell.layer];			//底层
+                
+                CALayer *backImageLayer = [[CALayer alloc] init];
+                backImageLayer.frame = backLayer.bounds;
+                backImageLayer.contents = (id) [backImage CGImage];
+                backImageLayer.contentsGravity = kCAGravityResize;
+                backImageLayer.doubleSided = NO;
+                backImageLayer.transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
+                
+                [backLayer addSublayer:backImageLayer];		//上层
+                [backImageLayer release];
+                
+                [self.layer addSublayer:backLayer];
+                [backLayer release];
+                
+                [self.layerArray insertObject:backLayer atIndex:0];
+            }else{
+                [self.layer addSublayer:rightCell.layer];
+                [self.layerArray insertObject:rightCell.layer atIndex:0];
+            }
+            
             [self.photoArray insertObject:rightCell atIndex:0];
             [rightCell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
-           
+            [rightCell release];
             
             // leftcell
             PaperCell *leftcell = [[PaperCell alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) orientation:PaperCellLeft];
             leftcell.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
             leftcell.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
-            [self addSubview:leftcell];
-            [leftcell release];
+            if (i == 0) {
+                // backImage
+                CATransformLayer *coverLayer = [[CATransformLayer alloc] init];
+                coverLayer.anchorPoint = CGPointMake(1.0f, 0.5f);
+                coverLayer.frame = leftcell.layer.frame;
+                leftcell.layer.anchorPoint = CGPointMake(0.5, 0.5);
+                leftcell.layer.frame = coverLayer.bounds;
+                [coverLayer addSublayer:leftcell.layer];			//底层
+                
+                CALayer *coverImageLayer = [[CALayer alloc] init];
+                coverImageLayer.frame = coverLayer.bounds;
+                coverImageLayer.contents = (id) [coverImage CGImage];
+                coverImageLayer.doubleSided = NO;
+                coverImageLayer.transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
+                
+                [coverLayer addSublayer:coverImageLayer];		//上层
+                [coverImageLayer release];
+                
+                [self.layer addSublayer:coverLayer];
+                [coverLayer release];
+                
+                [self.layerArray insertObject:coverLayer atIndex:0];
+            }else{
+                [self.layer addSublayer:leftcell.layer];
+                [self.layerArray insertObject:leftcell.layer atIndex:0];
+            }
+            
             [self.photoArray insertObject:leftcell atIndex:0];
             [leftcell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
+            [leftcell release];
         }
 
         [self resetViews];
+
+        UIView *gestureView = [[UIView alloc] initWithFrame:self.bounds];
+        [self addSubview:gestureView];
+        [gestureView release];
         
         // 滑动翻页手势
-        UIPanGestureRecognizer *panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self
-                                                                                     action:@selector(paningGestureReceive:)]autorelease];
-        [self addGestureRecognizer:panGesture];
-        
-        UIButton * nextBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        nextBtn.frame = CGRectMake(frame.size.width - 100, frame.size.height - 40, 100, 40);
-        [nextBtn addTarget:self action:@selector(nextBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:nextBtn];
-        
+        UIPanGestureRecognizer *panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(paningGestureReceive:)]autorelease];
+        [gestureView addGestureRecognizer:panGesture];
+    
         // 双指捏合手势
-        UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)];
-        [self addGestureRecognizer:pinchGesture];
-        [pinchGesture release];
+        UIPinchGestureRecognizer *pinchGesture = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)] autorelease];
+        [gestureView addGestureRecognizer:pinchGesture];
     }
     return self;
 }
 
-- (void) nextBtnClick:(id)sender{
-    pageIndex++;
-    [self resetViewsAnimated:CGPointMake(0, 0)];
-}
 
 - (void) resetViews{
     for (int i = 0; i < self.photoArray.count; i+=2) {
         PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
         PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
+        
+        CALayer *leftLayer = (CALayer *)[self.layerArray objectAtIndex:i];
+        CALayer *rightLayer = (CALayer *)[self.layerArray objectAtIndex:i + 1];
         
         leftcell.tipsLbl.text = [NSString stringWithFormat:@"%d",i];
         rightcell.tipsLbl.text = [NSString stringWithFormat:@"%d",i+1];
@@ -140,7 +193,7 @@
         
         CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
-        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        leftLayer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
         //=====================
         
@@ -165,7 +218,7 @@
         rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle, 0, 1, 0);
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
-        rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        rightLayer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
         
         if (index == pageIndex) {
@@ -192,8 +245,9 @@
     
     // 调整每一页的变换
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
+        
+        CALayer *leftLayer = (CALayer *)[self.layerArray objectAtIndex:i];
+        CALayer *rightLayer = (CALayer *)[self.layerArray objectAtIndex:i + 1];
         
         NSInteger index = i/2;
         
@@ -256,7 +310,7 @@
         // lTrans
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
         
-        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        leftLayer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
         
         //==========================rightlayer========================
@@ -316,12 +370,13 @@
         
         // rTrans
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
-        rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        rightLayer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
     }
 }
 
 // 单手滑动
 - (void) moveChange:(float)move{
+    
     NSInteger currentIndex = startPageIndex + (int)(move/moveSensitivity);
     if (currentIndex < 0 || currentIndex >= self.urlArray.count) {
         return;
@@ -362,6 +417,9 @@
     for (int i = 0; i < self.photoArray.count; i+=2) {
         PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
         PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
+        
+        CALayer *leftLayer = (CALayer *)[self.layerArray objectAtIndex:i];
+        CALayer *rightLayer = (CALayer *)[self.layerArray objectAtIndex:i + 1];
         
         NSInteger index = i/2;
         
@@ -418,7 +476,7 @@
         // lTrans
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
         
-        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        leftLayer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
 
         
         //==========================rightlayer========================
@@ -472,7 +530,7 @@
         
         // rTrans
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
-        rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        rightLayer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
 
         // 图层阴影

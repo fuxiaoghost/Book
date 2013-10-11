@@ -37,7 +37,7 @@
 @synthesize leftPhotoArray;
 @synthesize rightPhotoArray;
 @synthesize urlArray;
-@synthesize coverImage;
+@synthesize coverImage = _coverImage;
 
 - (void) dealloc{
     self.leftPhotoArray = nil;
@@ -107,6 +107,15 @@
     }
     return self;
 }
+
+- (void) setCoverImage:(UIImage *)coverImage{
+    [_coverImage release];
+    _coverImage = coverImage;
+    [_coverImage retain];
+    
+    
+}
+
 
 - (void) resetLeftViews{
     for (int i = 0; i < self.leftPhotoArray.count;i++) {
