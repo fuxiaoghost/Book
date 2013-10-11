@@ -66,36 +66,40 @@
         
         for (int i = urls.count - 1; i >= 0; i--) {
             // rightcell
-            PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
-            rightCell.layer.anchorPoint = CGPointMake(0, 0.5);
-            rightCell.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
+            PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
+            
+            CALayer *rightLayer = [CALayer layer];
+            rightLayer.anchorPoint = CGPointMake(0, 0.5);
+            rightLayer.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
+            [rightLayer addSublayer:rightCell.layer];
+            
             if (i == urls.count - 1) {
                 // backImage
-                CATransformLayer *backLayer = [[CATransformLayer alloc] init];
+                CATransformLayer *backLayer = [CATransformLayer layer];
                 backLayer.anchorPoint = CGPointMake(0, 0.5);
                 backLayer.frame =  CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
-                rightCell.layer.anchorPoint = CGPointMake(0.5, 0.5);
-                rightCell.layer.frame = backLayer.bounds;
-                [backLayer addSublayer:rightCell.layer];			//底层
+                rightLayer.masksToBounds = YES;
+                rightLayer.frame = backLayer.bounds;
+                [backLayer addSublayer:rightLayer];			//底层
                 
-                CALayer *backImageLayer = [[CALayer alloc] init];
+                CALayer *backImageLayer = [CALayer layer];
                 backImageLayer.frame = backLayer.bounds;
                 backImageLayer.contents = (id) [backImage CGImage];
                 backImageLayer.contentsGravity = kCAGravityResize;
                 backImageLayer.doubleSided = NO;
+                backImageLayer.masksToBounds = YES;
                 backImageLayer.transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
                 
                 [backLayer addSublayer:backImageLayer];		//上层
-                [backImageLayer release];
                 
                 [self.layer addSublayer:backLayer];
-                [backLayer release];
                 
                 [self.layerArray insertObject:backLayer atIndex:0];
             }else{
-                [self.layer addSublayer:rightCell.layer];
-                [self.layerArray insertObject:rightCell.layer atIndex:0];
+                [self.layer addSublayer:rightLayer];
+                [self.layerArray insertObject:rightLayer atIndex:0];
             }
+            
             
             [self.photoArray insertObject:rightCell atIndex:0];
             [rightCell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
@@ -103,33 +107,40 @@
             
             // leftcell
             PaperCell *leftcell = [[PaperCell alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) orientation:PaperCellLeft];
-            leftcell.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
-            leftcell.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
+            
+            CALayer *leftLayer = [CALayer layer];
+            leftLayer.anchorPoint = CGPointMake(1.0f, 0.5f);
+            leftLayer.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
+            [leftLayer addSublayer:leftcell.layer];
+            
             if (i == 0) {
                 // backImage
-                CATransformLayer *coverLayer = [[CATransformLayer alloc] init];
+                CATransformLayer *coverLayer = [CATransformLayer layer];
                 coverLayer.anchorPoint = CGPointMake(1.0f, 0.5f);
-                coverLayer.frame = leftcell.layer.frame;
-                leftcell.layer.anchorPoint = CGPointMake(0.5, 0.5);
-                leftcell.layer.frame = coverLayer.bounds;
-                [coverLayer addSublayer:leftcell.layer];			//底层
+                coverLayer.frame = leftLayer.frame;
+                leftLayer.frame = coverLayer.bounds;
+                leftLayer.masksToBounds = YES;
+                [coverLayer addSublayer:leftLayer];			//底层
+                coverLayer.masksToBounds = YES;
                 
-                CALayer *coverImageLayer = [[CALayer alloc] init];
+                CALayer *coverImageLayer = [CALayer layer];
                 coverImageLayer.frame = coverLayer.bounds;
                 coverImageLayer.contents = (id) [coverImage CGImage];
                 coverImageLayer.doubleSided = NO;
+                coverImageLayer.masksToBounds = YES;
                 coverImageLayer.transform = CATransform3DMakeRotation(M_PI, 0, 1, 0);
                 
                 [coverLayer addSublayer:coverImageLayer];		//上层
-                [coverImageLayer release];
+                
                 
                 [self.layer addSublayer:coverLayer];
-                [coverLayer release];
                 
                 [self.layerArray insertObject:coverLayer atIndex:0];
+                
+                
             }else{
-                [self.layer addSublayer:leftcell.layer];
-                [self.layerArray insertObject:leftcell.layer atIndex:0];
+                [self.layer addSublayer:leftLayer];
+                [self.layerArray insertObject:leftLayer atIndex:0];
             }
             
             [self.photoArray insertObject:leftcell atIndex:0];
@@ -456,7 +467,6 @@
         }else{
             lNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
-        
 
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance + (lNextDistance - lCurrentDistance) * pageRemainder/moveSensitivity);
         lTransform3D_2= CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
@@ -464,9 +474,17 @@
         // 变换纠偏
         if (lNextAngle == lCurrentAngle) {
             if (move > 0) {
-                lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + ABS(pageIndex - index) * zDistance);
+                if (index <= pageIndex) {
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + ABS(pageIndex - index) * zDistance);
+                }else{
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, -z - ABS(pageIndex - index) * zDistance);
+                }
             }else if(move < 0){
-                lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + ABS(pageIndex - 1 - index) * zDistance);
+                if (index <= pageIndex - 1) {
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + ABS(pageIndex - 1 - index) * zDistance);
+                }else{
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, -z_ - ABS(pageIndex - 1 - index) * zDistance);
+                }
             }
         }
         
@@ -477,7 +495,6 @@
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
         
         leftLayer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
-
         
         //==========================rightlayer========================
         // rTrans_0
@@ -519,9 +536,18 @@
         // 变换纠偏
         if (rNextAngle == rCurrentAngle) {
             if (move > 0) {
-                rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - ABS(index - pageIndex - 1) * zDistance);
+                if (index < pageIndex + 1) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_ + ABS(index - pageIndex - 1) * zDistance);
+                }else{
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - ABS(index - pageIndex - 1) * zDistance);
+                }
+                
             }else if(move < 0 ){
-                rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - ABS(index - pageIndex) * zDistance);
+                if (index < pageIndex) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, z + ABS(index - pageIndex) * zDistance);
+                }else{
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - ABS(index - pageIndex) * zDistance);
+                }
             }
         }        
         
@@ -530,6 +556,7 @@
         
         // rTrans
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
+
         rightLayer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
 
