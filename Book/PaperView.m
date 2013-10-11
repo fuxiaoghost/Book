@@ -22,9 +22,12 @@
 #define INTERFACE_FACEDOWN              ([[UIApplication sharedApplication]statusBarOrientation] == UIDeviceOrientationFaceDown)
 
 #define KEY_WINDOW  [[UIApplication sharedApplication]keyWindow]
+
 #define VIEW_MIN_ANGLE (M_PI_4/6)
 #define VIEW_MAX_ANGLE (M_PI_4)
-#define VIEW_Z_DISTANCE -400                    // 沿z轴移动距离
+#define VIEW_Z_DISTANCE (-400)                    // 沿z轴移动距离
+#define VIEW_Z_MIN_DISTANCE 0
+#define VIEW_Z_MAX_DISTANCE (-800)
 #define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
 #define VIEW_ALPHA 0.6
 
@@ -49,10 +52,13 @@
     if (self) {
         self.urlArray = urls;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
+        
         zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
         moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width;
         moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
-
+        pinchSensitivity = moveSensitivity;
+        pinchSensitivity_ = frame.size.width - pinchSensitivity;
+        
         for (int i = urls.count - 1; i >= 0; i--) {
             // rightcell
             PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
@@ -76,7 +82,7 @@
 
         [self resetViews];
         
-        // 添加手势
+        // 滑动翻页手势
         UIPanGestureRecognizer *panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self
                                                                                      action:@selector(paningGestureReceive:)]autorelease];
         [self addGestureRecognizer:panGesture];
@@ -85,6 +91,11 @@
         nextBtn.frame = CGRectMake(frame.size.width - 100, frame.size.height - 40, 100, 40);
         [nextBtn addTarget:self action:@selector(nextBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:nextBtn];
+        
+        // 双指捏合手势
+        UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)];
+        [self addGestureRecognizer:pinchGesture];
+        [pinchGesture release];
     }
     return self;
 }
@@ -164,20 +175,152 @@
     }
 }
 
-- (float) touchLengthMoveTo:(CGPoint)touchPoint{
+- (void) unfold{
+    [self pinchChange:pinchSensitivity_];
     
-    if (INTERFACE_PORTRAIT) {
-        return -touchPoint.x + startTouch.x;
-    }else if(INTERFACE_PORTRAITUPSIDEDOWN){
-        return -startTouch.x + touchPoint.x;
-    }else if(INTERFACE_LANDSCAPELEFT){
-        return -touchPoint.y + startTouch.y;
-    }else if(INTERFACE_LANDSCAPERIGHT){
-        return -startTouch.y + touchPoint.y;
-    }
-    return 0;
+    
 }
 
+- (void) fold{
+    [self pinchChange:-pinchSensitivity];
+}
+
+
+// 捏合运动
+- (void) pinchChange:(float)move{
+    // move<0 捏合；move>0 展开
+    
+    // 调整每一页的变换
+    for (int i = 0; i < self.photoArray.count; i+=2) {
+        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
+        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
+        
+        NSInteger index = i/2;
+        
+        //==========================leftlayer=============================
+        // lTrans_0
+        CATransform3D lTransform3D_0;
+        float theta = 0; 
+        if (move < 0) {
+            //捏合
+            theta = (1 + move/pinchSensitivity) * VIEW_MIN_ANGLE;
+        }else{
+            // 展开
+            theta = VIEW_MIN_ANGLE;
+        }
+        lTransform3D_0 = CATransform3DMakeRotation(M_PI - theta, 0, 1, 0);
+        
+        // lTrans_1
+        CATransform3D lTransform3D_1;
+        float lCurrentDistance = 0;
+        if (move < 0) {
+            // 捏合
+            lCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
+            
+        }else{
+            // 展开
+            lCurrentDistance =  (pageIndex - index) * zDistance;
+        }
+        lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
+ 
+        
+        // lTrans_2
+        CATransform3D lTransform3D_2;
+        float lCurrentAngle = 0;
+        if (index <= pageIndex) {
+            if (move < 0) {
+                lCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE + (M_PI_2 + VIEW_MAX_ANGLE) * (-move)/pinchSensitivity;
+            }else{
+                lCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+            }
+            
+        }else{
+            if (move < 0) {
+                lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE - (VIEW_MAX_ANGLE - M_PI_2) * (-move)/pinchSensitivity;
+            }else{
+                lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+            }
+        }
+       
+        lTransform3D_2= CATransform3DMakeRotation(lCurrentAngle, 0, 1, 0);
+        
+        // lTrans_3
+        CATransform3D lTransform3D_3;
+        if (move < 0) {
+            lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE + (VIEW_Z_MAX_DISTANCE - VIEW_Z_DISTANCE) * (-move)/pinchSensitivity);
+        }else{
+            lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE + (VIEW_Z_MIN_DISTANCE - VIEW_Z_DISTANCE) * (move)/pinchSensitivity_);
+        }
+        
+        
+        // lTrans
+        CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
+        
+        leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+        
+        
+        //==========================rightlayer========================
+        // rTrans_0
+        CATransform3D rTransform3D_0;
+        
+        theta = 0;
+        if (move < 0) {
+            //捏合
+            theta = (1 + move/pinchSensitivity) * VIEW_MIN_ANGLE;
+        }else{
+            // 展开
+            theta = VIEW_MIN_ANGLE;
+        }
+        rTransform3D_0 = CATransform3DMakeRotation(theta, 0, 1, 0);
+        
+        //rTrans_1
+        CATransform3D rTransform3D_1;
+        float rCurrentDistance = 0;
+        if (move < 0) {
+            // 捏合
+            rCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
+            
+        }else{
+            // 展开
+            rCurrentDistance =  (pageIndex - index) * zDistance;
+        }
+        rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance);
+        
+        //rTrans_2
+        CATransform3D rTransform3D_2;
+        float rCurrentAngle = 0;
+        if (index < pageIndex) {            
+            if (move < 0) {
+                rCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE + (VIEW_MAX_ANGLE  + M_PI_2)* (-move)/pinchSensitivity;
+            }else{
+                rCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+            }
+
+        }else{
+            if (move < 0) {
+                rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE - (VIEW_MAX_ANGLE - M_PI_2) * (-move)/pinchSensitivity;
+            }else{
+                rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+            }
+        }
+     
+        rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle, 0, 1, 0);
+        
+        // rTrans_3
+        CATransform3D rTransform3D_3;
+        if (move < 0) {
+            rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE + (VIEW_Z_MAX_DISTANCE - VIEW_Z_DISTANCE) * (-move)/pinchSensitivity);
+        }else{
+            rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE + (VIEW_Z_MIN_DISTANCE - VIEW_Z_DISTANCE) * (move)/pinchSensitivity_);
+        }
+        
+        // rTrans
+        CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
+        rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
+    }
+}
+
+// 单手滑动
 - (void) moveChange:(float)move{
     NSInteger currentIndex = startPageIndex + (int)(move/moveSensitivity);
     if (currentIndex < 0 || currentIndex >= self.urlArray.count) {
@@ -202,9 +345,11 @@
     
     // 下一页的预测值
     NSInteger nextPageIndex = move > 0 ? (pageIndex + 1):(pageIndex - 1);
+    
+    // 纠偏参数
     float x = 0,z = 0,x_ = 0,z_ = 0;
-    float theta = 2 * (VIEW_MIN_ANGLE + VIEW_MAX_ANGLE) - M_PI - (VIEW_MAX_ANGLE + VIEW_MAX_ANGLE) * pageRemainder/moveSensitivity;
-    float alpha = (VIEW_MAX_ANGLE + VIEW_MAX_ANGLE) * pageRemainder/moveSensitivity;
+    float theta = 2 * VIEW_MAX_ANGLE - 2 *VIEW_MAX_ANGLE * pageRemainder/moveSensitivity; 
+    float alpha = 2 * VIEW_MAX_ANGLE * pageRemainder/moveSensitivity;
     
     float d = zDistance * pageRemainder/moveSensitivity;
     x = sinf(theta) * d;
@@ -212,13 +357,16 @@
     x_ = sinf(alpha) * (zDistance - d);
     z_ = cosf(alpha) * (zDistance - d);
     
-    
-    // 夹页间距
+
+    // 调整每一页的变换
     for (int i = 0; i < self.photoArray.count; i+=2) {
         PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
         PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
         
         NSInteger index = i/2;
+        
+        //==========================leftlayer=============================
+        // lTrans_0
         CATransform3D lTransform3D_0 = CATransform3DMakeRotation(M_PI - VIEW_MIN_ANGLE, 0, 1, 0);
         
         // lTrans_1
@@ -251,39 +399,32 @@
             lNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
         
-       
-        
+
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance + (lNextDistance - lCurrentDistance) * pageRemainder/moveSensitivity);
-        
-        BOOL animated = NO;
-        if (lNextAngle == lCurrentAngle) {
-            if (move > 0 && index == pageIndex) {
-                lTransform3D_1 = CATransform3DMakeTranslation(-x, 0, -z);
-                if (abs(-x) < 1) {
-                    animated = YES;
-                }
-                animated = YES;
-            }else if(move < 0 && index == pageIndex - 1){
-                lTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_);
-                if (abs(x_)<1) {
-                    animated = YES;
-                }
-            }
-        }
-       
         lTransform3D_2= CATransform3DMakeRotation(lCurrentAngle + (lNextAngle - lCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
         
+        // 变换纠偏
+        if (lNextAngle == lCurrentAngle) {
+            if (move > 0) {
+                lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + ABS(pageIndex - index) * zDistance);
+            }else if(move < 0){
+                lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + ABS(pageIndex - 1 - index) * zDistance);
+            }
+        }
         
+        // lTrans_3
         CATransform3D lTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
         
+        // lTrans
         CATransform3D lTransfrom3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(lTransform3D_0, lTransform3D_1), lTransform3D_2), lTransform3D_3);
         
         leftcell.layer.transform = CATransform3DPerspect(lTransfrom3D, CGPointZero, VIEW_Z_PERSPECTIVE);
 
         
-        //=====================
-        
+        //==========================rightlayer========================
+        // rTrans_0
         CATransform3D rTransform3D_0 = CATransform3DMakeRotation(VIEW_MIN_ANGLE, 0, 1, 0);
+        
         //rTrans_1
         CATransform3D rTransform3D_1;
         float rNextDistance = 0;
@@ -314,24 +455,27 @@
             rNextAngle = -M_PI_2 + VIEW_MAX_ANGLE;
         }
 
-        
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance + (rNextDistance - rCurrentDistance) * pageRemainder/moveSensitivity);
         rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle + (rNextAngle - rCurrentAngle) * pageRemainder/moveSensitivity, 0, 1, 0);
         
-        
+        // 变换纠偏
         if (rNextAngle == rCurrentAngle) {
-            if (move > 0 && index == pageIndex + 1) {
-                rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_);
-            }else if(move < 0 && index == pageIndex){
-                rTransform3D_1 = CATransform3DMakeTranslation(-x, 0, z);
+            if (move > 0) {
+                rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - ABS(index - pageIndex - 1) * zDistance);
+            }else if(move < 0 ){
+                rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - ABS(index - pageIndex) * zDistance);
             }
-        }
+        }        
         
+        // rTrans_3
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_DISTANCE);
+        
+        // rTrans
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightcell.layer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
 
+        // 图层阴影
         if (move > 0) {
             if (index == pageIndex) {
                 rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
@@ -348,7 +492,6 @@
             }
         }
     }
-
 }
 
 - (void) resetViewsAnimated:(CGPoint)touchPoint{
@@ -376,31 +519,93 @@
     }];
 }
 
-- (void)paningGestureReceive:(UIPanGestureRecognizer *)recoginzer{
+- (float) touchLengthMoveTo:(CGPoint)touchPoint{
     
+    if (INTERFACE_PORTRAIT) {
+        return -touchPoint.x + startTouch.x;
+    }else if(INTERFACE_PORTRAITUPSIDEDOWN){
+        return -startTouch.x + touchPoint.x;
+    }else if(INTERFACE_LANDSCAPELEFT){
+        return -touchPoint.y + startTouch.y;
+    }else if(INTERFACE_LANDSCAPERIGHT){
+        return -startTouch.y + touchPoint.y;
+    }
+    return 0;
+}
+
+// 滑动
+- (void)paningGestureReceive:(UIPanGestureRecognizer *)recoginzer{
     // 基于window的点击坐标
     CGPoint touchPoint = [recoginzer locationInView:KEY_WINDOW];
     
     // begin paning 显示last screenshot
     if (recoginzer.state == UIGestureRecognizerStateBegan) {
-        
-        _isMoving = YES;
         startTouch = touchPoint;
         startPageIndex = pageIndex;
-        
+        isMoving = YES;
     }else if (recoginzer.state == UIGestureRecognizerStateEnded){
         [self resetViewsAnimated:touchPoint];
+        isMoving = NO;
         return;
         // cancal panning 回弹
     }else if (recoginzer.state == UIGestureRecognizerStateCancelled){
         [self resetViewsAnimated:touchPoint];
+        isMoving = NO;
+        return;
+    }
+    if (isMoving) {
+        float move = [self touchLengthMoveTo:touchPoint];
+        [self moveChange:move];
+    }
+}
+
+// 捏合
+- (void) pinchGestureReceive:(UIPinchGestureRecognizer *)recoginzer{
+    // 限制为双指操作
+    if ([recoginzer numberOfTouches] <= 1) {
         return;
     }
     
-    // it keeps move with touch
-    if (_isMoving) {
-        float move = [self touchLengthMoveTo:touchPoint];
-        [self moveChange:move];
+    if (recoginzer.state == UIGestureRecognizerStateBegan) {
+        isPinching = YES;
+        pinchTouch0 = [recoginzer locationOfTouch:0 inView:self];
+        pinchTouch1 = [recoginzer locationOfTouch:1 inView:self];
+        NSLog(@"(%f,%f) (%f,%f)",pinchTouch0.x,pinchTouch0.y,pinchTouch1.x,pinchTouch1.y);
+    }else if (recoginzer.state == UIGestureRecognizerStateEnded){
+        isPinching = NO;
+        if (scope < 0 && scope < -100) {
+            [UIView animateWithDuration:0.3 animations:^{
+                [self fold];
+            }];
+        }else if(scope > 0 && scope > 100){
+            [UIView animateWithDuration:0.3 animations:^{
+                [self unfold];
+            }];
+        }else{
+            [self resetViewsAnimated:startTouch];
+        }
+        return;
+        // cancal panning 回弹
+    }else if (recoginzer.state == UIGestureRecognizerStateCancelled){
+        isPinching = NO;
+        [self resetViewsAnimated:startTouch];
+        return;
+    }else if(recoginzer.state == UIGestureRecognizerStateChanged){
+        // it keeps move with touch
+        if (isPinching) {
+            scope = 0;
+            CGPoint touch0 = [recoginzer locationOfTouch:0 inView:self];
+            CGPoint touch1 = [recoginzer locationOfTouch:1 inView:self];
+            
+            float x0 = ABS(pinchTouch0.x - pinchTouch1.x);
+            float x1 =  ABS(touch0.x - touch1.x);
+            
+            scope = x1 - x0;
+            
+            if ((scope < 0 && ABS(scope)<pinchSensitivity)||(scope > 0 && ABS(scope) < pinchSensitivity_)) {
+                [self pinchChange:scope];
+            }
+        }
     }
 }
 @end
