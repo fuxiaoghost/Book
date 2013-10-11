@@ -37,11 +37,13 @@
 @synthesize leftPhotoArray;
 @synthesize rightPhotoArray;
 @synthesize urlArray;
+@synthesize coverImage;
 
 - (void) dealloc{
     self.leftPhotoArray = nil;
     self.rightPhotoArray = nil;
     self.urlArray = nil;
+    self.coverImage = nil;
     [super dealloc];
 }
 

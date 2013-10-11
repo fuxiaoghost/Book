@@ -13,6 +13,6 @@
     BOOL _isMoving;
     CGPoint startTouch;
 }
-
+@property (nonatomic,retain) UIImage *coverImage;
 - (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls;
 @end
