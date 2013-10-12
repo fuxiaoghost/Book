@@ -72,6 +72,7 @@
             rightLayer.anchorPoint = CGPointMake(0, 0.5);
             rightLayer.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
             [rightLayer addSublayer:rightCell.layer];
+            rightLayer.doubleSided = NO;
             
             if (i == urls.count - 1) {
                 // backImage
@@ -112,6 +113,7 @@
             leftLayer.anchorPoint = CGPointMake(1.0f, 0.5f);
             leftLayer.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
             [leftLayer addSublayer:leftcell.layer];
+            leftLayer.doubleSided = NO;
             
             if (i == 0) {
                 // backImage
@@ -424,6 +426,7 @@
     z_ = cosf(alpha) * (zDistance - d);
     
 
+    NSLog(@"z:%f z_:%f",z,z_);
     // 调整每一页的变换
     for (int i = 0; i < self.photoArray.count; i+=2) {
         PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
@@ -475,15 +478,15 @@
         if (lNextAngle == lCurrentAngle) {
             if (move > 0) {
                 if (index <= pageIndex) {
-                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + ABS(pageIndex - index) * zDistance);
-                }else{
-                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, -z - ABS(pageIndex - index) * zDistance);
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + (pageIndex - index) * zDistance);
+                }else if(index > pageIndex+1){
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, -z_ - (index - pageIndex - 1) * zDistance);
                 }
             }else if(move < 0){
-                if (index <= pageIndex - 1) {
-                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + ABS(pageIndex - 1 - index) * zDistance);
-                }else{
-                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, -z_ - ABS(pageIndex - 1 - index) * zDistance);
+                if (index < pageIndex) {
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + (pageIndex - index - 1) * zDistance);
+                }else if(index > pageIndex){
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, -z - (index - pageIndex) * zDistance);
                 }
             }
         }
@@ -536,17 +539,17 @@
         // 变换纠偏
         if (rNextAngle == rCurrentAngle) {
             if (move > 0) {
-                if (index < pageIndex + 1) {
-                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_ + ABS(index - pageIndex - 1) * zDistance);
-                }else{
-                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - ABS(index - pageIndex - 1) * zDistance);
+                if (index < pageIndex) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, z + (pageIndex - index) *zDistance);
+                }else if(index > pageIndex ){
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - (index - pageIndex - 1) *zDistance);
                 }
                 
             }else if(move < 0 ){
-                if (index < pageIndex) {
-                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, z + ABS(index - pageIndex) * zDistance);
-                }else{
-                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - ABS(index - pageIndex) * zDistance);
+                if (index < pageIndex - 1) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_ + (pageIndex - index - 1) * zDistance);
+                }else if(index >= pageIndex){
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - (index - pageIndex) *zDistance);
                 }
             }
         }        
