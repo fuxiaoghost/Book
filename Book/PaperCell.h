@@ -17,11 +17,9 @@ typedef enum {
 @interface PaperCell : UIView{
 @private
     UIImageView *photoView;
-    UILabel *tipsLbl;
     UIView *markView;
 }
 @property (nonatomic,readonly) UIImageView *photoView;
-@property (nonatomic,readonly) UILabel *tipsLbl;
 @property (nonatomic,readonly) UIView *markView;
 - (id)initWithFrame:(CGRect)frame orientation:(PaperCellOrientation)orientation;
 @end
