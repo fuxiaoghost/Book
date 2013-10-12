@@ -935,6 +935,9 @@
 
 // 滑动
 - (void)paningGestureReceive:(UIPanGestureRecognizer *)recoginzer{
+    if (isPinching) {
+        return;
+    }
     // 基于window的点击坐标
     CGPoint touchPoint = [recoginzer locationInView:KEY_WINDOW];
     
@@ -961,6 +964,10 @@
 
 // 捏合
 - (void) pinchGestureReceive:(UIPinchGestureRecognizer *)recoginzer{
+    
+    if (isMoving) {
+        return;
+    }
     // 限制为双指操作
     if ([recoginzer numberOfTouches] <= 1) {
         return;
