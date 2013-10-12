@@ -324,9 +324,9 @@
         CATransform3D lTransform3D_2;
         float lCurrentAngle = 0;
         if (index <= pageIndex) {
-            lCurrentAngle = -M_PI;
+            lCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
         }else{
-            lCurrentAngle = 0;
+            lCurrentAngle = -VIEW_MIN_ANGLE;
         }
         lTransform3D_2 = CATransform3DMakeRotation(lCurrentAngle, 0, 1, 0);
         
@@ -350,9 +350,9 @@
         CATransform3D rTransform3D_2;
         float rCurrentAngle = 0;
         if (index < pageIndex) {
-            rCurrentAngle = -M_PI;
+            rCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
         }else{
-            rCurrentAngle = 0;
+            rCurrentAngle = -VIEW_MIN_ANGLE;
         }
         rTransform3D_2= CATransform3DMakeRotation(rCurrentAngle, 0, 1, 0);
         CATransform3D rTransform3D_3 = CATransform3DMakeTranslation(0, 0, VIEW_Z_MIN_DISTANCE);
@@ -444,16 +444,16 @@
             }else{
                 // 展开
                 if (self.paperStatus == PaperNormal) {
-                    lCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE) * move_/pinchSensitivity_;
-                    if(lCurrentAngle < -M_PI){
-                        lCurrentAngle = -M_PI;
+                    lCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move_/pinchSensitivity_;
+                    if(lCurrentAngle < -M_PI + VIEW_MIN_ANGLE){
+                        lCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    lCurrentAngle = -M_PI;
+                    lCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                 }else if(self.paperStatus == PaperFold){
-                    lCurrentAngle = -M_PI * move_/(pinchSensitivity + pinchSensitivity_);
-                    if (lCurrentAngle < -M_PI) {
-                        lCurrentAngle = -M_PI;
+                    lCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (lCurrentAngle < -M_PI + VIEW_MIN_ANGLE) {
+                        lCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                     }
                 }
             }
@@ -475,16 +475,16 @@
             }else{
                 // 展开
                 if (self.paperStatus == PaperNormal) {
-                    lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE) * move_/pinchSensitivity_;
-                    if (lCurrentAngle > 0) {
-                        lCurrentAngle = 0;
+                    lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move_/pinchSensitivity_;
+                    if (lCurrentAngle > - VIEW_MIN_ANGLE) {
+                        lCurrentAngle = - VIEW_MIN_ANGLE;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    lCurrentAngle = 0;
+                    lCurrentAngle = - VIEW_MIN_ANGLE;
                 }else if(self.paperStatus == PaperFold){
-                    lCurrentAngle = (-M_PI_2 + VIEW_MAX_ANGLE) * move_/pinchSensitivity;
-                    if (lCurrentAngle < -M_PI_2 + VIEW_MAX_ANGLE) {
-                        lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
+                    lCurrentAngle = (- VIEW_MIN_ANGLE) * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (lCurrentAngle < - VIEW_MIN_ANGLE) {
+                        lCurrentAngle = - VIEW_MIN_ANGLE;
                     }
                 }
                 
@@ -607,16 +607,16 @@
             }else{
                 // 展开
                 if (self.paperStatus == PaperNormal) {
-                    rCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE) * move_/pinchSensitivity_;
-                    if(rCurrentAngle < -M_PI){
-                        rCurrentAngle = -M_PI;
+                    rCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move_/pinchSensitivity_;
+                    if(rCurrentAngle < -M_PI + VIEW_MIN_ANGLE){
+                        rCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    rCurrentAngle = -M_PI;
+                    rCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                 }else if(self.paperStatus == PaperFold){
-                    rCurrentAngle = -M_PI * move_/(pinchSensitivity + pinchSensitivity_);
-                    if (rCurrentAngle < -M_PI) {
-                        rCurrentAngle = -M_PI;
+                    rCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (rCurrentAngle < -M_PI + VIEW_MIN_ANGLE) {
+                        rCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
                     }
                 }
             }
@@ -637,16 +637,16 @@
             }else{
                 // 展开
                 if (self.paperStatus == PaperNormal) {
-                    rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE) * move_/pinchSensitivity_;
-                    if (rCurrentAngle > 0) {
-                        rCurrentAngle = 0;
+                    rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move_/pinchSensitivity_;
+                    if (rCurrentAngle > - VIEW_MIN_ANGLE) {
+                        rCurrentAngle = - VIEW_MIN_ANGLE;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    rCurrentAngle = 0;
+                    rCurrentAngle = - VIEW_MIN_ANGLE;
                 }else if(self.paperStatus == PaperFold){
-                    rCurrentAngle = (-M_PI_2 + VIEW_MAX_ANGLE) * move_/pinchSensitivity;
-                    if (rCurrentAngle < -M_PI_2 + VIEW_MAX_ANGLE) {
-                        rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
+                    rCurrentAngle = (- VIEW_MIN_ANGLE) * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (rCurrentAngle < - VIEW_MIN_ANGLE) {
+                        rCurrentAngle = - VIEW_MIN_ANGLE;
                     }
                 }
                 
@@ -963,6 +963,7 @@
 - (void) pinchGestureReceive:(UIPinchGestureRecognizer *)recoginzer{
     // 限制为双指操作
     if ([recoginzer numberOfTouches] <= 1) {
+        [self resetViewsAnimated:CGPointMake(0, 0)];
         return;
     }
     
