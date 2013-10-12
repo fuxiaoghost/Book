@@ -963,7 +963,6 @@
 - (void) pinchGestureReceive:(UIPinchGestureRecognizer *)recoginzer{
     // 限制为双指操作
     if ([recoginzer numberOfTouches] <= 1) {
-        [self resetViewsAnimated:CGPointMake(0, 0)];
         return;
     }
     
