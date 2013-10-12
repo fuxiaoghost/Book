@@ -15,6 +15,8 @@
 		79D7AD9318041BC000EF7C0F /* CATransform3DPerspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */; };
 		79E4CF2A1807EAE8000D2976 /* CoverOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 79E4CF281807EAE8000D2976 /* CoverOverlay.png */; };
 		79E4CF2B1807EAE8000D2976 /* CoverOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79E4CF291807EAE8000D2976 /* CoverOverlay@2x.png */; };
+		79EB6E641809664500AB0FFE /* BackOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 79EB6E621809664500AB0FFE /* BackOverlay.png */; };
+		79EB6E651809664500AB0FFE /* BackOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79EB6E631809664500AB0FFE /* BackOverlay@2x.png */; };
 		DD8DD07E18016AF300FB2E48 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD07D18016AF300FB2E48 /* Foundation.framework */; };
 		DD8DD08018016AF300FB2E48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD07F18016AF300FB2E48 /* CoreGraphics.framework */; };
 		DD8DD08218016AF300FB2E48 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD8DD08118016AF300FB2E48 /* UIKit.framework */; };
@@ -48,6 +50,8 @@
 		79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CATransform3DPerspect.m; sourceTree = "<group>"; };
 		79E4CF281807EAE8000D2976 /* CoverOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CoverOverlay.png; sourceTree = "<group>"; };
 		79E4CF291807EAE8000D2976 /* CoverOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CoverOverlay@2x.png"; sourceTree = "<group>"; };
+		79EB6E621809664500AB0FFE /* BackOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackOverlay.png; sourceTree = "<group>"; };
+		79EB6E631809664500AB0FFE /* BackOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BackOverlay@2x.png"; sourceTree = "<group>"; };
 		DD8DD07A18016AF300FB2E48 /* Book.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Book.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD8DD07D18016AF300FB2E48 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DD8DD07F18016AF300FB2E48 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -164,6 +168,8 @@
 		DD8DD08418016AF300FB2E48 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				79EB6E621809664500AB0FFE /* BackOverlay.png */,
+				79EB6E631809664500AB0FFE /* BackOverlay@2x.png */,
 				79E4CF281807EAE8000D2976 /* CoverOverlay.png */,
 				79E4CF291807EAE8000D2976 /* CoverOverlay@2x.png */,
 				DD8DD08518016AF300FB2E48 /* Book-Info.plist */,
@@ -256,6 +262,8 @@
 				DD8DD09018016AF300FB2E48 /* Images.xcassets in Resources */,
 				79E4CF2A1807EAE8000D2976 /* CoverOverlay.png in Resources */,
 				79E4CF2B1807EAE8000D2976 /* CoverOverlay@2x.png in Resources */,
+				79EB6E641809664500AB0FFE /* BackOverlay.png in Resources */,
+				79EB6E651809664500AB0FFE /* BackOverlay@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
