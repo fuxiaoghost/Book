@@ -35,6 +35,7 @@
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
 @property (nonatomic,retain) NSArray *urlArray;                     // 图片地址
 @property (nonatomic,retain) NSMutableArray *layerArray;
+@property (nonatomic,assign) PaperStatus paperStatus;
 @end
 
 @implementation PaperView
@@ -42,6 +43,7 @@
 @synthesize photoArray;
 @synthesize layerArray;
 @synthesize urlArray;
+@synthesize paperStatus;
 
 - (void) dealloc{
     self.photoArray = nil;
@@ -56,11 +58,13 @@
         self.urlArray = urls;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
         self.layerArray = [NSMutableArray arrayWithCapacity:0];
+        self.paperStatus = PaperNormal;
         
         // 预先计算数据
         zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
         moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width;
         moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
+        
         pinchSensitivity = moveSensitivity;
         pinchSensitivity_ = frame.size.width - pinchSensitivity;
         
@@ -169,6 +173,8 @@
 
 
 - (void) resetViews{
+    self.paperStatus = PaperNormal;
+    
     for (int i = 0; i < self.photoArray.count; i+=2) {
         PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
         PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
@@ -242,12 +248,12 @@
 }
 
 - (void) unfold{
+    self.paperStatus = PaperUnfold;
     [self pinchChange:pinchSensitivity_];
-    
-    
 }
 
 - (void) fold{
+    self.paperStatus = PaperFold;
     [self pinchChange:-pinchSensitivity];
 }
 
@@ -263,6 +269,7 @@
         CALayer *rightLayer = (CALayer *)[self.layerArray objectAtIndex:i + 1];
         
         NSInteger index = i/2;
+        float move_ = ABS(move);
         
         //==========================leftlayer=============================
         // lTrans_0
@@ -270,24 +277,43 @@
         float theta = 0; 
         if (move < 0) {
             //捏合
-            theta = (1 + move/pinchSensitivity) * VIEW_MIN_ANGLE;
+            if (self.paperStatus == PaperNormal) {
+                if (move_ < pinchSensitivity) {
+                    theta = VIEW_MIN_ANGLE * (1 - ABS(move/pinchSensitivity));
+                }else{
+                    theta = 0;
+                }
+            }else if(self.paperStatus == PaperUnfold){
+                if (move_ < pinchSensitivity_) {
+                    theta = VIEW_MIN_ANGLE;
+                }else{
+                    theta = VIEW_MIN_ANGLE * (1 - (move_ - pinchSensitivity_)/pinchSensitivity);
+                    if (theta < 0) {
+                        theta = 0;
+                    }
+                }
+            }else if(self.paperStatus == PaperFold){
+                theta = 0;
+            }
         }else{
             // 展开
-            theta = VIEW_MIN_ANGLE;
+            if (self.paperStatus == PaperNormal) {
+                theta = VIEW_MIN_ANGLE;
+            }else if(self.paperStatus == PaperUnfold){
+                theta = VIEW_MIN_ANGLE;
+            }else if(self.paperStatus == PaperFold){
+                theta = VIEW_MIN_ANGLE * move/pinchSensitivity;
+                if (theta > VIEW_MIN_ANGLE) {
+                    theta = VIEW_MIN_ANGLE;
+                }
+            }
         }
         lTransform3D_0 = CATransform3DMakeRotation(M_PI - theta, 0, 1, 0);
         
         // lTrans_1
         CATransform3D lTransform3D_1;
         float lCurrentDistance = 0;
-        if (move < 0) {
-            // 捏合
-            lCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
-            
-        }else{
-            // 展开
-            lCurrentDistance =  (pageIndex - index) * zDistance;
-        }
+        lCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
  
         
@@ -296,16 +322,65 @@
         float lCurrentAngle = 0;
         if (index <= pageIndex) {
             if (move < 0) {
-                lCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE + (M_PI_2 + VIEW_MAX_ANGLE) * (-move)/pinchSensitivity;
+                // 捏合
+                if (self.paperStatus == PaperNormal) {
+                    lCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE + (M_PI_2 + VIEW_MAX_ANGLE) * move_/pinchSensitivity;
+                    if (lCurrentAngle > 0) {
+                        lCurrentAngle = 0;
+                    }
+                }else if(self.paperStatus == PaperUnfold){
+                    lCurrentAngle = -M_PI + M_PI * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (lCurrentAngle > 0) {
+                        lCurrentAngle = 0;
+                    }
+                }else if(self.paperStatus == PaperFold){
+                    lCurrentAngle = 0;
+                }
+                
             }else{
-                lCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+                // 展开
+                if (self.paperStatus == PaperNormal) {
+                    lCurrentAngle = -M_PI_2 -VIEW_MAX_ANGLE - (M_PI_2-VIEW_MAX_ANGLE) * move_/pinchSensitivity_;
+                    if(lCurrentAngle < -M_PI){
+                        lCurrentAngle = -M_PI;
+                    }
+                }else if(self.paperStatus == PaperUnfold){
+                    lCurrentAngle = -M_PI;
+                }else if(self.paperStatus == PaperFold){
+                    lCurrentAngle = -M_PI * move_/(pinchSensitivity + pinchSensitivity_);
+                    if (lCurrentAngle < -M_PI) {
+                        lCurrentAngle = -M_PI;
+                    }
+                }
             }
             
         }else{
             if (move < 0) {
-                lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE - (VIEW_MAX_ANGLE - M_PI_2) * (-move)/pinchSensitivity;
+                // 捏合
+                if (self.paperStatus == PaperNormal) {
+                    lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE - (VIEW_MAX_ANGLE - M_PI_2) * move_/pinchSensitivity;
+                    if (lCurrentAngle > 0) {
+                        lCurrentAngle = 0;
+                    }
+                }else if(self.paperStatus == PaperUnfold){
+                    lCurrentAngle = 0;
+                }else if(self.paperStatus == PaperFold){
+                    lCurrentAngle = 0;
+                }
+                
             }else{
-                lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE - VIEW_MIN_ANGLE) * move/pinchSensitivity_;
+                // 展开
+                if (self.paperStatus == PaperNormal) {
+                    lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE + (M_PI_2-VIEW_MAX_ANGLE) * move/pinchSensitivity_;
+                    if (lCurrentAngle > 0) {
+                        lCurrentAngle = 0;
+                    }
+                }else if(self.paperStatus == PaperUnfold){
+                    lCurrentAngle = 0;
+                }else if(self.paperStatus == PaperFold){
+                    lCurrentAngle = -
+                }
+                
             }
         }
        
@@ -690,9 +765,25 @@
             
             scope = x1 - x0;
             
-            if ((scope < 0 && ABS(scope)<pinchSensitivity)||(scope > 0 && ABS(scope) < pinchSensitivity_)) {
-                [self pinchChange:scope];
-            }
+//            if (self.paperStatus == PaperNormal) {
+//                pinchSensitivity = moveSensitivity;
+//                pinchSensitivity_ = self.frame.size.width - pinchSensitivity;
+//            }else if(self.paperStatus == PaperFold){
+//                pinchSensitivity_ = self.frame.size.width;
+//                pinchSensitivity = 0;
+//            }else if(self.paperStatus == PaperUnfold){
+//                pinchSensitivity = self.frame.size.width;
+//                pinchSensitivity_ = 0;
+//            }
+//            
+//            if (scope > 0 && self.paperStatus == PaperUnfold) {
+//                return;
+//            }
+//            if (scope < 0 && self.paperStatus == PaperFold) {
+//                return;
+//            }
+            
+            [self pinchChange:scope];
         }
     }
 }

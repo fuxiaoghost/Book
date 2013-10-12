@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    PaperNormal,
+    PaperFold,
+    PaperUnfold
+}PaperStatus;
+
 @interface PaperView : UIView{
 @private
     BOOL isMoving;              // 单手滑动翻页，是否正在移动
