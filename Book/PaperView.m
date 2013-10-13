@@ -72,7 +72,11 @@
             PaperLayer *leftLayer = [[PaperLayer alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) paperType:PaperLayerLeft];
             leftLayer.image = [self.imageArray objectAtIndex:i];
             leftLayer.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
-            leftLayer.frame = CGRectMake(0, 0, frame.size.width/2 + 0.5, frame.size.height);
+            if (i == self.imageArray.count - 1 || i == 0) {
+                leftLayer.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
+            }else{
+                leftLayer.frame = CGRectMake(0, 0, frame.size.width/2 + 0.5, frame.size.height);
+            }
             [self.layer addSublayer:leftLayer.layer];
             leftLayer.layer.doubleSided = NO;
             
@@ -87,7 +91,7 @@
         
         
         // 手势接收View
-        UIView *gestureView = [[UIView alloc] initWithFrame:self.bounds];
+        gestureView = [[UIView alloc] initWithFrame:self.bounds];
         [self addSubview:gestureView];
         [gestureView release];
         
@@ -113,6 +117,37 @@
         
     }
     return self;
+}
+
+- (void) setFrame:(CGRect)frame{
+    if (frame.size.width == self.frame.size.width) {
+        [super setFrame:frame];
+        return;
+    }
+    [super setFrame:frame];
+    
+    // 预先计算数据
+    zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
+    moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * self.frame.size.width;
+    moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
+    
+    pinchSensitivity = moveSensitivity;
+    pinchSensitivity_ = self.frame.size.width - pinchSensitivity/2;
+    
+    gestureView.frame = self.bounds;
+    for (int i = 0; i < self.photoArray.count; i += 2){
+        PaperLayer *leftcell = [self.photoArray objectAtIndex:i];
+        PaperLayer *rightcell = [self.photoArray objectAtIndex:i + 1];
+       
+        rightcell.frame = CGRectMake(self.frame.size.width/2, 0, self.frame.size.width/2, self.frame.size.height);
+        
+        if (i == self.photoArray.count - 2 || i == 0) {
+            leftcell.frame = CGRectMake(0, 0, self.frame.size.width/2, self.frame.size.height);
+        }else{
+            leftcell.frame = CGRectMake(0, 0, self.frame.size.width/2 + 0.5, self.frame.size.height);
+        }
+    }
+    
 }
 
 

@@ -45,6 +45,21 @@
     return self;
 }
 
+- (void) setFrame:(CGRect)frame{
+    if (frame.size.width == self.frame.size.width) {
+        [super setFrame:frame];
+        return;
+    }
+    [super setFrame:frame];
+    if (self.paperOrientation == PaperLayerLeft) {
+        markView.frame = CGRectMake(0, 0, frame.size.width + 30, frame.size.height);
+    }else if(self.paperOrientation == PaperLayerRight){
+        markView.frame = CGRectMake(-30, 0, frame.size.width + 30, frame.size.height);
+    }
+    
+    [self setNeedsDisplay];
+}
+
 - (void) drawRect:(CGRect)rect{
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	

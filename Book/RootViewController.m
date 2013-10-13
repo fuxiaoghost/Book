@@ -38,7 +38,7 @@
         [imageArray addObject:[UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg",i]]];
     }
     
-    PaperView *paperView = [[PaperView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) images:imageArray];
+    paperView = [[PaperView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) images:imageArray];
     paperView.backgroundColor = [UIColor clearColor];
     
     [self.view addSubview:paperView];
@@ -60,6 +60,16 @@
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation{
     return YES;
+}
+
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if (toInterfaceOrientation == UIInterfaceOrientationPortrait || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        paperView.frame = CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT);
+    }else{
+        paperView.frame = CGRectMake(0, 0,SCREEN_HEIGHT,SCREEN_WIDTH);
+    }
+    
 }
 
 

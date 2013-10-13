@@ -30,6 +30,7 @@ typedef enum {
     float scope;                //
     UIPanGestureRecognizer *panGesture;
     UIPinchGestureRecognizer *pinchGesture;
+    UIView *gestureView;
 }
 @property (nonatomic,assign) NSInteger pageIndex;
 - (id)initWithFrame:(CGRect)frame images:(NSArray *)images;
