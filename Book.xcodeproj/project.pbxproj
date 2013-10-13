@@ -23,7 +23,6 @@
 		DD8DD08818016AF300FB2E48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD08618016AF300FB2E48 /* InfoPlist.strings */; };
 		DD8DD08A18016AF300FB2E48 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD08918016AF300FB2E48 /* main.m */; };
 		DD8DD08E18016AF300FB2E48 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD08D18016AF300FB2E48 /* AppDelegate.m */; };
-		DD8DD09018016AF300FB2E48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD08F18016AF300FB2E48 /* Images.xcassets */; };
 		DD8DD0AE18016C9900FB2E48 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0AD18016C9900FB2E48 /* RootViewController.m */; };
 		DD8DD0B118016ED400FB2E48 /* BookView.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0B018016ED400FB2E48 /* BookView.m */; };
 		DD8DD0C518016F1400FB2E48 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0B418016F1400FB2E48 /* SDImageCache.m */; };
@@ -36,6 +35,17 @@
 		DD8DD0CE18016F4100FB2E48 /* PhotoProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0CD18016F4100FB2E48 /* PhotoProgressView.m */; };
 		DD8DD0D118016F8600FB2E48 /* UIImage+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DD0D018016F8600FB2E48 /* UIImage+Utils.m */; };
 		DD8DD0D3180173FC00FB2E48 /* photos.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD8DD0D2180173FC00FB2E48 /* photos.plist */; };
+		DDF1D92D180A4F6200008653 /* Icon-60.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D925180A4F6200008653 /* Icon-60.png */; };
+		DDF1D92E180A4F6200008653 /* Icon-60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D926180A4F6200008653 /* Icon-60@2x.png */; };
+		DDF1D92F180A4F6200008653 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D927180A4F6200008653 /* Icon-72.png */; };
+		DDF1D930180A4F6200008653 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D928180A4F6200008653 /* Icon-72@2x.png */; };
+		DDF1D931180A4F6200008653 /* Icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D929180A4F6200008653 /* Icon-76.png */; };
+		DDF1D932180A4F6200008653 /* Icon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D92A180A4F6200008653 /* Icon-76@2x.png */; };
+		DDF1D937180A4FAC00008653 /* Icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D935180A4FAC00008653 /* Icon-57.png */; };
+		DDF1D938180A4FAC00008653 /* Icon-57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D936180A4FAC00008653 /* Icon-57@2x.png */; };
+		DDF1D93B180A559000008653 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D939180A559000008653 /* Default.png */; };
+		DDF1D93C180A559000008653 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D93A180A559000008653 /* Default@2x.png */; };
+		DDF1D93E180A55FD00008653 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF1D93D180A55FD00008653 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,7 +72,6 @@
 		DD8DD08B18016AF300FB2E48 /* Book-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Book-Prefix.pch"; sourceTree = "<group>"; };
 		DD8DD08C18016AF300FB2E48 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DD8DD08D18016AF300FB2E48 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		DD8DD08F18016AF300FB2E48 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DD8DD0AC18016C9900FB2E48 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		DD8DD0AD18016C9900FB2E48 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		DD8DD0AF18016ED400FB2E48 /* BookView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookView.h; sourceTree = "<group>"; };
@@ -90,6 +99,17 @@
 		DD8DD0CF18016F8600FB2E48 /* UIImage+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Utils.h"; sourceTree = "<group>"; };
 		DD8DD0D018016F8600FB2E48 /* UIImage+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Utils.m"; sourceTree = "<group>"; };
 		DD8DD0D2180173FC00FB2E48 /* photos.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = photos.plist; sourceTree = "<group>"; };
+		DDF1D925180A4F6200008653 /* Icon-60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-60.png"; sourceTree = "<group>"; };
+		DDF1D926180A4F6200008653 /* Icon-60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-60@2x.png"; sourceTree = "<group>"; };
+		DDF1D927180A4F6200008653 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		DDF1D928180A4F6200008653 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
+		DDF1D929180A4F6200008653 /* Icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76.png"; sourceTree = "<group>"; };
+		DDF1D92A180A4F6200008653 /* Icon-76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76@2x.png"; sourceTree = "<group>"; };
+		DDF1D935180A4FAC00008653 /* Icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-57.png"; sourceTree = "<group>"; };
+		DDF1D936180A4FAC00008653 /* Icon-57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-57@2x.png"; sourceTree = "<group>"; };
+		DDF1D939180A559000008653 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		DDF1D93A180A559000008653 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		DDF1D93D180A55FD00008653 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,7 +179,6 @@
 				79D7AD8E1803E29C00EF7C0F /* PaperView.m */,
 				79D7AD9118041BC000EF7C0F /* CATransform3DPerspect.h */,
 				79D7AD9218041BC000EF7C0F /* CATransform3DPerspect.m */,
-				DD8DD08F18016AF300FB2E48 /* Images.xcassets */,
 				DD8DD08418016AF300FB2E48 /* Supporting Files */,
 			);
 			path = Book;
@@ -168,6 +187,17 @@
 		DD8DD08418016AF300FB2E48 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DDF1D93D180A55FD00008653 /* Default-568h@2x.png */,
+				DDF1D939180A559000008653 /* Default.png */,
+				DDF1D93A180A559000008653 /* Default@2x.png */,
+				DDF1D935180A4FAC00008653 /* Icon-57.png */,
+				DDF1D936180A4FAC00008653 /* Icon-57@2x.png */,
+				DDF1D925180A4F6200008653 /* Icon-60.png */,
+				DDF1D926180A4F6200008653 /* Icon-60@2x.png */,
+				DDF1D927180A4F6200008653 /* Icon-72.png */,
+				DDF1D928180A4F6200008653 /* Icon-72@2x.png */,
+				DDF1D929180A4F6200008653 /* Icon-76.png */,
+				DDF1D92A180A4F6200008653 /* Icon-76@2x.png */,
 				79EB6E621809664500AB0FFE /* BackOverlay.png */,
 				79EB6E631809664500AB0FFE /* BackOverlay@2x.png */,
 				79E4CF281807EAE8000D2976 /* CoverOverlay.png */,
@@ -234,6 +264,11 @@
 			attributes = {
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Dawn;
+				TargetAttributes = {
+					DD8DD07918016AF300FB2E48 = {
+						DevelopmentTeam = MKH5M3L4N2;
+					};
+				};
 			};
 			buildConfigurationList = DD8DD07518016AF300FB2E48 /* Build configuration list for PBXProject "Book" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -257,13 +292,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDF1D93C180A559000008653 /* Default@2x.png in Resources */,
 				DD8DD0D3180173FC00FB2E48 /* photos.plist in Resources */,
+				DDF1D92F180A4F6200008653 /* Icon-72.png in Resources */,
 				DD8DD08818016AF300FB2E48 /* InfoPlist.strings in Resources */,
-				DD8DD09018016AF300FB2E48 /* Images.xcassets in Resources */,
+				DDF1D932180A4F6200008653 /* Icon-76@2x.png in Resources */,
+				DDF1D93B180A559000008653 /* Default.png in Resources */,
+				DDF1D937180A4FAC00008653 /* Icon-57.png in Resources */,
+				DDF1D92D180A4F6200008653 /* Icon-60.png in Resources */,
+				DDF1D93E180A55FD00008653 /* Default-568h@2x.png in Resources */,
+				DDF1D931180A4F6200008653 /* Icon-76.png in Resources */,
 				79E4CF2A1807EAE8000D2976 /* CoverOverlay.png in Resources */,
+				DDF1D92E180A4F6200008653 /* Icon-60@2x.png in Resources */,
+				DDF1D938180A4FAC00008653 /* Icon-57@2x.png in Resources */,
 				79E4CF2B1807EAE8000D2976 /* CoverOverlay@2x.png in Resources */,
 				79EB6E641809664500AB0FFE /* BackOverlay.png in Resources */,
 				79EB6E651809664500AB0FFE /* BackOverlay@2x.png in Resources */,
+				DDF1D930180A4F6200008653 /* Icon-72@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,14 +436,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: wesley shen (A9R7H99R6W)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Book/Book-Prefix.pch";
 				INFOPLIST_FILE = "Book/Book-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "318B9697-1C99-48D9-9777-DE3DDF8089D1";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -407,14 +451,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: wesley shen (A9R7H99R6W)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Book/Book-Prefix.pch";
 				INFOPLIST_FILE = "Book/Book-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "318B9697-1C99-48D9-9777-DE3DDF8089D1";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

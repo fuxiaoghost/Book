@@ -14,7 +14,7 @@
 
 #define VIEW_MIN_ANGLE (M_PI_4/6)
 #define VIEW_MAX_ANGLE (M_PI_4)
-#define VIEW_Z_DISTANCE (-400)                    // 沿z轴移动距离
+#define VIEW_Z_DISTANCE (-300)                    // 沿z轴移动距离
 #define VIEW_Z_MIN_DISTANCE 0
 #define VIEW_Z_MAX_DISTANCE (-800)
 #define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
@@ -51,7 +51,8 @@
         moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
         
         pinchSensitivity = moveSensitivity;
-        pinchSensitivity_ = frame.size.width - pinchSensitivity;
+        pinchSensitivity_ = frame.size.width - pinchSensitivity/2;
+        
         
         for (int i = urls.count - 1; i >= 0; i--) {
             // rightcell
@@ -107,6 +108,7 @@
     }
     return self;
 }
+
 
 #pragma mark -
 #pragma mark Reset & ResetAnimated
@@ -211,15 +213,40 @@
 #pragma mark -
 #pragma mark Unfold & Fold & UnfoldAnimated & FoldAnimated
 - (void) foldAnimated{
+    if (self.paperStatus == PaperNormal) {
+        if (ABS(pinchSensitivity * 3/4) < ABS(scope)) {
+            [UIView animateWithDuration:0.4 animations:^{
+                [self fold];
+            }];
+        }else{
+            [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                [self pinchChange:-pinchSensitivity * 3/4];
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                    [self pinchChange:-pinchSensitivity * 2/4];
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                        [self pinchChange:-pinchSensitivity * 3/4];
+                    } completion:^(BOOL finished) {
+                        [UIView animateWithDuration:0.3 animations:^{
+                            [self fold];
+                        }];
+                    }];
+                }];
+            }];
+        }
+        
+    }else{
+        [UIView animateWithDuration:0.4 animations:^{
+            [self fold];
+        }];
+    }
     self.paperStatus = PaperFold;
-    [UIView animateWithDuration:0.3 animations:^{
-        [self fold];
-    }];
 }
 
 - (void) unfoldAnimated{
     self.paperStatus = PaperUnfold;
-    [UIView animateWithDuration:0.3 animations:^{
+    [UIView animateWithDuration:0.4 animations:^{
         [self unfold];
     }];
 }
@@ -407,9 +434,9 @@
                         lCurrentAngle = 0;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    lCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) + (M_PI - VIEW_MIN_ANGLE) * move_/ (pinchSensitivity + pinchSensitivity_);
-                    if (lCurrentAngle > 0) {
-                        lCurrentAngle = 0;
+                    lCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) + (M_PI_2 - VIEW_MIN_ANGLE) * move_/ (pinchSensitivity + pinchSensitivity_);
+                    if (lCurrentAngle > -M_PI_2) {
+                        lCurrentAngle = -M_PI_2;
                     }
                 }else if(self.paperStatus == PaperFold){
                     lCurrentAngle = 0;
@@ -441,10 +468,10 @@
                         lCurrentAngle = 0;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    lCurrentAngle = -VIEW_MIN_ANGLE + VIEW_MIN_ANGLE * move_/(pinchSensitivity_ + pinchSensitivity);
+                    lCurrentAngle = -VIEW_MIN_ANGLE + (VIEW_MIN_ANGLE - M_PI_2) * move_/(pinchSensitivity_ + pinchSensitivity);
                  
-                    if (lCurrentAngle > 0) {
-                        lCurrentAngle = 0;
+                    if (lCurrentAngle <  -M_PI_2) {
+                        lCurrentAngle =  -M_PI_2;
                     }
                 }else if(self.paperStatus == PaperFold){
                     lCurrentAngle = 0;
@@ -460,7 +487,8 @@
                 }else if(self.paperStatus == PaperUnfold){
                     lCurrentAngle = - VIEW_MIN_ANGLE;
                 }else if(self.paperStatus == PaperFold){
-                    lCurrentAngle = -VIEW_MIN_ANGLE * move_/(pinchSensitivity + pinchSensitivity_);
+                    
+                    lCurrentAngle =  -VIEW_MIN_ANGLE * move_/(pinchSensitivity + pinchSensitivity_);
                    
                     if (lCurrentAngle < - VIEW_MIN_ANGLE) {
                         lCurrentAngle = - VIEW_MIN_ANGLE;
@@ -541,9 +569,9 @@
                         rCurrentAngle = 0;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    rCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) + (M_PI - VIEW_MIN_ANGLE) * move_/ (pinchSensitivity + pinchSensitivity_);
-                    if (rCurrentAngle > 0) {
-                        rCurrentAngle = 0;
+                    rCurrentAngle = (-M_PI + VIEW_MIN_ANGLE) + (M_PI_2 - VIEW_MIN_ANGLE) * move_/ (pinchSensitivity + pinchSensitivity_);
+                    if (rCurrentAngle >  -M_PI_2) {
+                        rCurrentAngle =  -M_PI_2;
                     }
                 }else if(self.paperStatus == PaperFold){
                     rCurrentAngle = 0;
@@ -574,10 +602,10 @@
                         rCurrentAngle = 0;
                     }
                 }else if(self.paperStatus == PaperUnfold){
-                    rCurrentAngle = -VIEW_MIN_ANGLE + VIEW_MIN_ANGLE * move_/(pinchSensitivity_ + pinchSensitivity);
+                    rCurrentAngle = -VIEW_MIN_ANGLE + (VIEW_MIN_ANGLE - M_PI_2) * move_/(pinchSensitivity_ + pinchSensitivity);
                     
-                    if (rCurrentAngle > 0) {
-                        rCurrentAngle = 0;
+                    if (rCurrentAngle < -M_PI_2) {
+                        rCurrentAngle = -M_PI_2;
                     }
                 }else if(self.paperStatus == PaperFold){
                     rCurrentAngle = 0;
@@ -833,19 +861,36 @@
 // 点击
 - (void) tapGestureReceive:(UITapGestureRecognizer *)recoginzer{
     if (self.paperStatus == PaperUnfold || self.paperStatus == PaperFold) {
-        [self resetViewsAnimated:CGPointZero time:0.6];
+   
+        [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+            [self pinchChange:pinchSensitivity/4];
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                [self pinchChange:pinchSensitivity/2];
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                    [self pinchChange:pinchSensitivity* 3/4];
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionCurveLinear animations:^{
+                        [self resetViews];
+                    } completion:^(BOOL finished) {
+
+                    }];
+                }];
+            }];
+        }];
     }
 }
 
 // 滑动
 - (void)paningGestureReceive:(UIPanGestureRecognizer *)recoginzer{
-    if (isPinching) {
+    if (isPinching || self.paperStatus == PaperFold) {
         return;
     }
     // begin paning 显示last screenshot
     if (recoginzer.state == UIGestureRecognizerStateBegan) {
-        if (self.paperStatus == PaperFold || self.paperStatus == PaperUnfold) {
-            [self resetViewsAnimated:CGPointZero time:0.6];
+        if (self.paperStatus == PaperUnfold) {
+            [self resetViewsAnimated:CGPointZero time:0.4];
             return;
         }
         endTouch = [recoginzer locationOfTouch:0 inView:self];
@@ -898,12 +943,9 @@
                 // 还原
             }
         }else if(self.paperStatus == PaperUnfold){
-            if (scope > -pinchSensitivity_ && scope < - 100) {
+            if (scope < - 100) {
                 // 还原
                 [self resetViewsAnimated:CGPointMake(0, 0) time:0.3];
-            }else if(scope < -pinchSensitivity_){
-                // 捏合
-                [self foldAnimated];
             }else{
                 // 展开
                 [self unfoldAnimated];

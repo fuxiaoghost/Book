@@ -25,7 +25,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         photoView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,frame.size.width,frame.size.height)];
-        photoView.contentMode = UIViewContentModeScaleAspectFill;
+        photoView.contentMode = UIViewContentModeScaleToFill;
         photoView.clipsToBounds = YES;
         photoView.layer.doubleSided = NO;
         [self addSubview:photoView];

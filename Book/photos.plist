@@ -2,11 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<string>http://e.hiphotos.baidu.com/album/w%3D2048/sign=65dd80dc574e9258a63481eea8bad358/4610b912c8fcc3ceaf03a18b9345d688d53f2042.jpg</string>
-	<string>http://e.hiphotos.baidu.com/album/w%3D2048/sign=5720a3683812b31bc76cca29b220377a/63d0f703918fa0ec2c575b22279759ee3d6ddb08.jpg</string>
-	<string>http://a.hiphotos.baidu.com/album/w%3D2048/sign=0a938b00d53f8794d3ff4f2ee6230cf4/faedab64034f78f06fe0f24b78310a55b2191c9a.jpg</string>
-	<string>http://g.hiphotos.baidu.com/album/w%3D2048/sign=8f13fabd5366d0167e199928a313d507/cefc1e178a82b901fc58ba43728da9773812efcd.jpg</string>
-	<string>http://h.hiphotos.baidu.com/album/w%3D2048/sign=b6f5d0a66159252da3171a0400a3023b/77094b36acaf2eddccc07b558c1001e93901935c.jpg</string>
 	<string>http://e.hiphotos.baidu.com/album/w%3D2048/sign=be38ce8b728da9774e2f812b8469f919/8b13632762d0f7036527986409fa513d2797c5f5.jpg</string>
 	<string>http://a.hiphotos.baidu.com/album/w%3D2048/sign=719b7c9c9922720e7bcee5fa4ff30b46/5243fbf2b2119313c812264e64380cd790238dff.jpg</string>
 	<string>http://h.hiphotos.baidu.com/album/w%3D2048/sign=4d0a12efa50f4bfb8cd09954377778f0/86d6277f9e2f0708e7305770e824b899a901f28d.jpg</string>
@@ -22,13 +17,5 @@
 	<string>http://b.hiphotos.baidu.com/album/w%3D2048/sign=a5ef212b359b033b2c88fbda21f637d3/a2cc7cd98d1001e948c42820b90e7bec54e79720.jpg</string>
 	<string>http://c.hiphotos.baidu.com/album/w%3D2048/sign=9c694e027dd98d1076d40b311507ba0e/5fdf8db1cb134954bb97309a574e9258d0094a47.jpg</string>
 	<string>http://f.hiphotos.baidu.com/album/w%3D2048/sign=1e229db1b64543a9f51bfdcc2a2f8b82/0b7b02087bf40ad1cfe284a6562c11dfa9ecce75.jpg</string>
-	<string>http://d.hiphotos.baidu.com/album/w%3D2048/sign=7f97136a00e9390156028a3e4fd455e7/ca1349540923dd5455000c22d009b3de9c82480c.jpg</string>
-	<string>http://f.hiphotos.baidu.com/album/w%3D2048/sign=34cb4263dc54564ee565e33987e69d82/738b4710b912c8fcbe5188bdfd039245d688211b.jpg</string>
-	<string>http://c.hiphotos.baidu.com/album/w%3D2048/sign=4f4e1afc0ff41bd5da53eff465e280cb/aec379310a55b319d9947fa242a98226cefc17f3.jpg</string>
-	<string>http://a.hiphotos.baidu.com/album/w%3D2048/sign=13f4ff6214ce36d3a20484300ecb3b87/3801213fb80e7bec1ca600592e2eb9389b506b0d.jpg</string>
-	<string>http://d.hiphotos.baidu.com/album/w%3D2048/sign=dacc9f7bb7fd5266a72b3b149f20962b/8326cffc1e178a82e206ec30f703738da977e86c.jpg</string>
-	<string>http://c.hiphotos.baidu.com/album/w%3D2048/sign=0b86276b38dbb6fd255be2263d1caa18/42a98226cffc1e17d0de1fa14b90f603738de939.jpg</string>
-	<string>http://h.hiphotos.baidu.com/album/w%3D2048/sign=3ee7a6b05d6034a829e2bf81ff2b4854/71cf3bc79f3df8dc76c2a020cc11728b46102887.jpg</string>
-	<string>http://h.hiphotos.baidu.com/album/w%3D2048/sign=21c70ebdadaf2eddd4f14ee9b92800e9/bd315c6034a85edfda7f8e9848540923dc54759d.jpg</string>
 </array>
 </plist>
