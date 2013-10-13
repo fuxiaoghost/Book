@@ -27,8 +27,10 @@ typedef enum {
     float pinchSensitivity;     // 捏合一页所需要的滑动距离
     float pinchSensitivity_;    // 展开一页所需要的滑动距离
     float zDistance;            // 每页之间的间距
-    float scope;                // 
+    float scope;                //
+    UIPanGestureRecognizer *panGesture;
+    UIPinchGestureRecognizer *pinchGesture;
 }
 @property (nonatomic,assign) NSInteger pageIndex;
-- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls coverImage:(UIImage *)coverImage backImage:(UIImage *)backImage;
+- (id)initWithFrame:(CGRect)frame images:(NSArray *)images;
 @end

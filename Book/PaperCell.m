@@ -25,20 +25,29 @@
     self = [super initWithFrame:frame];
     if (self) {
         photoView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,frame.size.width,frame.size.height)];
-        photoView.contentMode = UIViewContentModeScaleToFill;
+        photoView.contentMode = UIViewContentModeScaleAspectFill;
         photoView.clipsToBounds = YES;
         photoView.layer.doubleSided = NO;
         [self addSubview:photoView];
         self.clipsToBounds = YES;
         self.layer.doubleSided = NO;
-        photoView.backgroundColor = [UIColor whiteColor];
-        self.backgroundColor = [UIColor whiteColor];
+        photoView.backgroundColor = [UIColor blackColor];
+        self.backgroundColor = [UIColor clearColor];
+        
+        //photoView.layer.cornerRadius = 10.0f;
+        self.layer.borderWidth = 3;
+        self.layer.borderColor = [UIColor clearColor].CGColor;
+        self.layer.shouldRasterize = YES;
         
         if (orientation == PaperCellLeft) {
             photoView.frame = CGRectMake(0, 0, frame.size.width * 2, frame.size.height);
         }else if(orientation == PaperCellRight){
             photoView.frame = CGRectMake(-frame.size.width, 0, frame.size.width * 2, frame.size.height);
         }
+        
+//        self.layer.borderWidth = 3;
+//        self.layer.borderColor = [UIColor clearColor].CGColor;
+
         
         markView = [[UIView alloc] initWithFrame:self.bounds];
         markView.backgroundColor = [UIColor blackColor];

@@ -7,7 +7,7 @@
 //
 
 #import "PaperView.h"
-#import "PaperCell.h"
+#import "PaperLayer.h"
 #import <QuartzCore/QuartzCore.h>
 #import "UIImageView+WebCache.h"
 #import "CATransform3DPerspect.h"
@@ -18,30 +18,30 @@
 #define VIEW_Z_MIN_DISTANCE 0
 #define VIEW_Z_MAX_DISTANCE (-800)
 #define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
-#define VIEW_ALPHA 0.6
+#define VIEW_ALPHA 0.8
 
 @interface PaperView()
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
-@property (nonatomic,retain) NSArray *urlArray;                     // 图片地址
+@property (nonatomic,retain) NSArray *imageArray;                     // 图片地址
 @property (nonatomic,assign) PaperStatus paperStatus;
 @end
 
 @implementation PaperView
 @synthesize pageIndex;
 @synthesize photoArray;
-@synthesize urlArray;
+@synthesize imageArray;
 @synthesize paperStatus;
 
 - (void) dealloc{
     self.photoArray = nil;
-    self.urlArray = nil;
+    self.imageArray = nil;
     [super dealloc];
 }
 
-- (id)initWithFrame:(CGRect)frame photoUrls:(NSArray *)urls coverImage:(UIImage *)coverImage backImage:(UIImage *)backImage{
+- (id)initWithFrame:(CGRect)frame images:(NSArray *)images{
     self = [super initWithFrame:frame];
     if (self) {
-        self.urlArray = urls;
+        self.imageArray = images;
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
         self.paperStatus = PaperNormal;
         
@@ -52,55 +52,61 @@
         
         pinchSensitivity = moveSensitivity;
         pinchSensitivity_ = frame.size.width - pinchSensitivity/2;
+    
         
-        
-        for (int i = urls.count - 1; i >= 0; i--) {
-            // rightcell
-            PaperCell *rightCell = [[PaperCell alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) orientation:PaperCellRight];
-            rightCell.layer.anchorPoint = CGPointMake(0, 0.5);
-            rightCell.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
-            [self addSubview:rightCell];
-            [rightCell release];
-            if (i == urls.count - 1) {
-                rightCell.layer.doubleSided = YES;
+        for (int i = self.imageArray.count - 1; i >= 0; i--) {
+            // rightlayer
+            PaperLayer *rightLayer = [[PaperLayer alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) paperType:PaperLayerRight];
+            rightLayer.image = [self.imageArray objectAtIndex:i];
+            rightLayer.layer.anchorPoint = CGPointMake(0, 0.5);
+            rightLayer.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
+            [self.layer addSublayer:rightLayer.layer];
+            rightLayer.layer.doubleSided = NO;
+            
+            if (i == self.imageArray.count - 1) {
+                rightLayer.layer.doubleSided = YES;
             }
-            [self.photoArray insertObject:rightCell atIndex:0];
-            [rightCell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
-            
-            
-            // leftcell
-            PaperCell *leftcell = [[PaperCell alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) orientation:PaperCellLeft];
-            
-            leftcell.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
-            leftcell.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
-            [self addSubview:leftcell];
-            [leftcell release];
+            [self.photoArray insertObject:rightLayer atIndex:0];
+    
+            // leftlayer
+            PaperLayer *leftLayer = [[PaperLayer alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) paperType:PaperLayerLeft];
+            leftLayer.image = [self.imageArray objectAtIndex:i];
+            leftLayer.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
+            leftLayer.frame = CGRectMake(0, 0, frame.size.width/2 + 0.5, frame.size.height);
+            [self.layer addSublayer:leftLayer.layer];
+            leftLayer.layer.doubleSided = NO;
             
             if (i == 0) {
-                leftcell.layer.doubleSided = YES;
+                leftLayer.layer.doubleSided = YES;
             }
             
-            [self.photoArray insertObject:leftcell atIndex:0];
-            [leftcell.photoView setImageWithURL:[NSURL URLWithString:[urls objectAtIndex:i]] options:SDWebImageRetryFailed progress:NO];
+            [self.photoArray insertObject:leftLayer atIndex:0];
         }
 
         [self resetViews];
         
+        
+        // 手势接收View
+        UIView *gestureView = [[UIView alloc] initWithFrame:self.bounds];
+        [self addSubview:gestureView];
+        [gestureView release];
+        
+        
         // 滑动翻页手势
-        UIPanGestureRecognizer *panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(paningGestureReceive:)]autorelease];
-        [self addGestureRecognizer:panGesture];
+        panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(paningGestureReceive:)]autorelease];
+        [gestureView addGestureRecognizer:panGesture];
         panGesture.minimumNumberOfTouches = 1;
         panGesture.maximumNumberOfTouches = 1;
         
     
         // 双指捏合手势
-        UIPinchGestureRecognizer *pinchGesture = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)] autorelease];
-        [self addGestureRecognizer:pinchGesture];
+        pinchGesture = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)] autorelease];
+        [gestureView addGestureRecognizer:pinchGesture];
         [pinchGesture requireGestureRecognizerToFail:panGesture];
         
         // 点击手势
         UITapGestureRecognizer *tapGesture = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureReceive:)] autorelease];
-        [self addGestureRecognizer:tapGesture];
+        [gestureView addGestureRecognizer:tapGesture];
         tapGesture.numberOfTapsRequired = 1;
         tapGesture.numberOfTouchesRequired = 1;
         [tapGesture requireGestureRecognizerToFail:panGesture];
@@ -116,11 +122,8 @@
     self.paperStatus = PaperNormal;
     
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
-        
-        CALayer *leftLayer = leftcell.layer;
-        CALayer *rightLayer = rightcell.layer;
+        CALayer *leftLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i]).layer;
+        CALayer *rightLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i+1]).layer;
     
         
         NSInteger index = i/2;
@@ -175,6 +178,10 @@
         CATransform3D rTransform3D = CATransform3DConcat(CATransform3DConcat(CATransform3DConcat(rTransform3D_0, rTransform3D_1), rTransform3D_2), rTransform3D_3);
         rightLayer.transform = CATransform3DPerspect(rTransform3D, CGPointZero, VIEW_Z_PERSPECTIVE);
         
+    
+        
+        PaperLayer *leftcell = ((PaperLayer *)[self.photoArray objectAtIndex:i]);
+        PaperLayer *rightcell = ((PaperLayer *)[self.photoArray objectAtIndex:i+1]);
         
         if (index == pageIndex) {
             rightcell.markView.alpha = 0;
@@ -194,7 +201,7 @@
     }
     if (pageRemainder > moveSensitivity/2) {
         if (move > 0) {
-            if (pageIndex + 1 < self.urlArray.count) {
+            if (pageIndex + 1 < self.imageArray.count) {
                 pageIndex++;
             }
         }else{
@@ -254,11 +261,8 @@
 - (void) fold{
     self.paperStatus = PaperFold;
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
-        
-        CALayer *leftLayer = leftcell.layer;
-        CALayer *rightLayer = rightcell.layer;
+        CALayer *leftLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i]).layer;
+        CALayer *rightLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]).layer;
 
         CATransform3D lTransform3D_0 = CATransform3DMakeRotation(M_PI, 0, 1, 0);
         
@@ -296,11 +300,8 @@
 - (void) unfold{
     self.paperStatus = PaperUnfold;
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
-        
-        CALayer *leftLayer = leftcell.layer;
-        CALayer *rightLayer = rightcell.layer;
+        CALayer *leftLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i]).layer;
+        CALayer *rightLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]).layer;
 
         
         NSInteger index = i/2;
@@ -366,11 +367,9 @@
     
     // 调整每一页的变换
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
+        CALayer *leftLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i]).layer;
+        CALayer *rightLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]).layer;
         
-        CALayer *leftLayer = leftcell.layer;
-        CALayer *rightLayer = rightcell.layer;
         
         NSInteger index = i/2;
         float move_ = ABS(move);
@@ -652,7 +651,7 @@
 - (void) moveChange:(float)move{
     
     NSInteger currentIndex = startPageIndex + (int)(move/moveSensitivity);
-    if (currentIndex < 0 || currentIndex >= self.urlArray.count) {
+    if (currentIndex < 0 || currentIndex >= self.imageArray.count) {
         return;
     }
     
@@ -689,11 +688,8 @@
 
     // 调整每一页的变换
     for (int i = 0; i < self.photoArray.count; i+=2) {
-        PaperCell *leftcell = (PaperCell *)[self.photoArray objectAtIndex:i];
-        PaperCell *rightcell = (PaperCell *)[self.photoArray objectAtIndex:i+1];
-        
-        CALayer *leftLayer = leftcell.layer;
-        CALayer *rightLayer = rightcell.layer;
+        CALayer *leftLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i]).layer;
+        CALayer *rightLayer = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]).layer;
         
         NSInteger index = i/2;
         
@@ -824,6 +820,8 @@
         
 
         // 图层阴影
+        PaperLayer *leftcell = ((PaperLayer *)[self.photoArray objectAtIndex:i]);
+        PaperLayer *rightcell = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]);
         if (move > 0) {
             if (index == pageIndex) {
                 rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
@@ -879,6 +877,8 @@
                 }];
             }];
         }];
+    }else if(self.paperStatus == PaperNormal){
+        [self unfoldAnimated];
     }
 }
 
@@ -910,7 +910,12 @@
         endTouch = [recoginzer locationOfTouch:0 inView:self];
         if (isMoving) {
             float move = [self touchLengthMoveTo:endTouch];
+            
+//            [UIView beginAnimations:@"FLIP" context:nil];
+//            [UIView setAnimationDuration:0.01];
             [self moveChange:move];
+//            [UIView commitAnimations];
+            
         }
     }
    
@@ -924,7 +929,8 @@
         if ([recoginzer numberOfTouches] <= 1) {
             return;
         }
-    
+        panGesture.enabled = NO;
+        
         isPinching = YES;
         pinchTouch0 = [recoginzer locationOfTouch:0 inView:self];
         pinchTouch1 = [recoginzer locationOfTouch:1 inView:self];
@@ -962,12 +968,13 @@
                 [self foldAnimated];
             }
         }
-        
+        [panGesture performSelector:@selector(setEnabled:) withObject:[NSNumber numberWithBool:YES] afterDelay:0.3];
         return;
         // cancal panning 回弹
     }else if (recoginzer.state == UIGestureRecognizerStateCancelled){
         isPinching = NO;
         [self resetViewsAnimated:startTouch time:0.3];
+        panGesture.enabled = YES;
         return;
     }else if(recoginzer.state == UIGestureRecognizerStateChanged){
         // 限制为双指操作
@@ -980,8 +987,13 @@
             CGPoint touch1 = [recoginzer locationOfTouch:1 inView:self];
             
             scope = [self pinchLengthMoveTo:touch0 anotherPoint:touch1];
-            
+
+//            [UIView beginAnimations:@"FLIP" context:nil];
+//            [UIView setAnimationDuration:0.01];
             [self pinchChange:scope];
+//            [UIView commitAnimations];
+            
+            
         }
     }
 }
