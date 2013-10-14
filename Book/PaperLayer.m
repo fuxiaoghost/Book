@@ -16,7 +16,7 @@
 @synthesize markView;
 
 - (void)dealloc {
-	CGImageRelease(imageRef);
+	//CGImageRelease(imageRef);
     imageRef = nil;
     [super dealloc];
 }
@@ -31,7 +31,7 @@
         markView = [[UIView alloc] initWithFrame:self.bounds];
         markView.backgroundColor = [UIColor blackColor];
         markView.alpha = 0;
-        markView.layer.cornerRadius = 25.0f;
+        //markView.layer.cornerRadius = 25.0f;
         [self addSubview:markView];
         [markView release];
         if (orientation == PaperLayerLeft) {
@@ -58,6 +58,7 @@
     [self setNeedsDisplay];
 }
 
+/*
 - (void) drawRect:(CGRect)rect{
     
     uint64_t start = clock();//mach_absolute_time();  //可以精确到微秒级别
@@ -121,6 +122,7 @@
     
     NSLog(@" %lld", drawTime);
 }
+*/
 
 - (BOOL) haveImage{
     if (imageRef) {
@@ -131,7 +133,7 @@
 }
 
 - (void)setImage:(UIImage *)img {
-    CGImageRelease(imageRef);
+    //CGImageRelease(imageRef);
     imageRef = nil;
     if (img) {
         if (self.paperOrientation == PaperLayerLeft) {
@@ -142,7 +144,8 @@
         }
     }
     
-    [self setNeedsDisplay];
+    self.layer.contents = (id)imageRef;
+    CGImageRelease(imageRef);
 }
 
 @end

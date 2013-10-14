@@ -46,6 +46,8 @@
     moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
     pinchSensitivity = moveSensitivity;
     pinchSensitivity_ = self.frame.size.width - pinchSensitivity/2;
+    
+    moveSensitivity = 200;
 }
 
 - (id)initWithFrame:(CGRect)frame images:(NSArray *)images{
