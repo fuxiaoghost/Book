@@ -13,13 +13,11 @@
 @end
 @implementation PaperLayer
 @synthesize paperOrientation;
-@synthesize image;
 @synthesize markView;
 
 - (void)dealloc {
-	self.image			= nil;
 	CGImageRelease(imageRef);
-	
+    imageRef = nil;
     [super dealloc];
 }
 
@@ -61,6 +59,9 @@
 }
 
 - (void) drawRect:(CGRect)rect{
+    
+    uint64_t start = clock();//mach_absolute_time();  //可以精确到微秒级别
+    
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
 	CGFloat height = self.bounds.size.height;
@@ -68,6 +69,8 @@
 	CGContextScaleCTM(context, 1.0, -1.0);
 	CGContextSaveGState(context);
 
+    CGContextSetStrokeColorWithColor(context, [UIColor clearColor].CGColor);
+    CGContextSetFillColorWithColor(context, [UIColor colorWithRed:245.0f/255.0f green:244.0f/255.0f blue:240.0f/255.0f alpha:1].CGColor);
 	
 	CGRect rrect = CGRectMake(0, 0, rect.size.width, rect.size.height);
 	CGFloat radius = 25.0f;
@@ -110,17 +113,36 @@
 		// Fill & stroke the path
 		CGContextDrawPath(context, kCGPathFillStroke);
 	}
+    
+    uint64_t end = clock();//mach_absolute_time();
+    
+    uint64_t drawTime = end - start;
+    
+    
+    NSLog(@" %lld", drawTime);
+}
+
+- (BOOL) haveImage{
+    if (imageRef) {
+        return YES;
+    }else{
+        return NO;
+    }
 }
 
 - (void)setImage:(UIImage *)img {
     CGImageRelease(imageRef);
-    if (self.paperOrientation == PaperLayerLeft) {
-        imageRef = CGImageCreateWithImageInRect(img.CGImage, CGRectMake(0, 0, CGImageGetWidth(img.CGImage)/2.0f, CGImageGetHeight(img.CGImage)));
-        
-    }else if(self.paperOrientation == PaperLayerRight){
-        imageRef = CGImageCreateWithImageInRect(img.CGImage, CGRectMake(CGImageGetWidth(img.CGImage)/2.0f, 0, CGImageGetWidth(img.CGImage)/2.0f, CGImageGetHeight(img.CGImage)));
+    imageRef = nil;
+    if (img) {
+        if (self.paperOrientation == PaperLayerLeft) {
+            imageRef = CGImageCreateWithImageInRect(img.CGImage, CGRectMake(0, 0, CGImageGetWidth(img.CGImage)/2.0f, CGImageGetHeight(img.CGImage)));
+            
+        }else if(self.paperOrientation == PaperLayerRight){
+            imageRef = CGImageCreateWithImageInRect(img.CGImage, CGRectMake(CGImageGetWidth(img.CGImage)/2.0f, 0, CGImageGetWidth(img.CGImage)/2.0f, CGImageGetHeight(img.CGImage)));
+        }
     }
-	[self setNeedsDisplay];
+    
+    [self setNeedsDisplay];
 }
 
 @end

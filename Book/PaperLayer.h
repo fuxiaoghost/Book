@@ -20,7 +20,8 @@ typedef enum {
     CGImageRef imageRef;
     UIView *markView;
 }
-@property(nonatomic, retain) UIImage *image;
 @property (nonatomic,readonly) UIView *markView;
+- (BOOL) haveImage;
+- (void)setImage:(UIImage *)img;
 - (id) initWithFrame:(CGRect)frame paperType:(PaperLayerOrientation)orientation;
 @end

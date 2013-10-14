@@ -35,7 +35,8 @@
     
     NSMutableArray *imageArray = [NSMutableArray array];
     for (int i = 20; i < 40; i++) {
-        [imageArray addObject:[UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg",i]]];
+        
+        [imageArray addObject:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%d",i] ofType:@"jpg"]];
     }
     
     paperView = [[PaperView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH,SCREEN_HEIGHT) images:imageArray];

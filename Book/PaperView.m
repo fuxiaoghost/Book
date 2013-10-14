@@ -9,25 +9,25 @@
 #import "PaperView.h"
 #import "PaperLayer.h"
 #import <QuartzCore/QuartzCore.h>
-#import "UIImageView+WebCache.h"
 #import "CATransform3DPerspect.h"
 
-#define VIEW_MIN_ANGLE (M_PI_4/6)
-#define VIEW_MAX_ANGLE (M_PI_4)
-#define VIEW_Z_DISTANCE (-300)                    // 沿z轴移动距离
-#define VIEW_Z_MIN_DISTANCE 0
-#define VIEW_Z_MAX_DISTANCE (-800)
-#define VIEW_Z_PERSPECTIVE 1500                 // z轴透视
-#define VIEW_ALPHA 0.8
+#define VIEW_MIN_ANGLE (M_PI_4/6)       // 书页夹角/2
+#define VIEW_MAX_ANGLE (M_PI_4)         // (展开书页夹角 - 书页夹角)/2
+#define VIEW_Z_DISTANCE (-300)          // 沿z轴距离
+#define VIEW_Z_MIN_DISTANCE 0           // 最小z轴距离
+#define VIEW_Z_MAX_DISTANCE (-800)      // 最大z轴距离
+#define VIEW_Z_PERSPECTIVE 1500         // z轴透视
+#define VIEW_ALPHA 0.8                  // 阴影透明度
+#define VIEW_PRELOAD_NUM 4              // 预加载图片数量
 
 @interface PaperView()
 @property (nonatomic,retain) NSMutableArray *photoArray;        // 图片容器
-@property (nonatomic,retain) NSArray *imageArray;                     // 图片地址
-@property (nonatomic,assign) PaperStatus paperStatus;
+@property (nonatomic,retain) NSArray *imageArray;               // 图片地址
+@property (nonatomic,assign) PaperStatus paperStatus;           // 书页的当前状态(PaperNormal,PaperUnfold,PaperFold)
 @end
 
 @implementation PaperView
-@synthesize pageIndex;
+@synthesize pageIndex = _pageIndex;
 @synthesize photoArray;
 @synthesize imageArray;
 @synthesize paperStatus;
@@ -38,6 +38,16 @@
     [super dealloc];
 }
 
+// 准备变化所需要数据
+- (void) initData{
+    // 预先计算数据
+    zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
+    moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * self.frame.size.width;
+    moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
+    pinchSensitivity = moveSensitivity;
+    pinchSensitivity_ = self.frame.size.width - pinchSensitivity/2;
+}
+
 - (id)initWithFrame:(CGRect)frame images:(NSArray *)images{
     self = [super initWithFrame:frame];
     if (self) {
@@ -45,39 +55,34 @@
         self.photoArray = [NSMutableArray arrayWithCapacity:0];
         self.paperStatus = PaperNormal;
         
-        // 预先计算数据
-        zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
-        moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * frame.size.width;
-        moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
-        
-        pinchSensitivity = moveSensitivity;
-        pinchSensitivity_ = frame.size.width - pinchSensitivity/2;
-    
+        // 准备变化所需要数据
+        [self initData];
         
         for (int i = self.imageArray.count - 1; i >= 0; i--) {
             // rightlayer
             PaperLayer *rightLayer = [[PaperLayer alloc] initWithFrame:CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height) paperType:PaperLayerRight];
-            rightLayer.image = [self.imageArray objectAtIndex:i];
             rightLayer.layer.anchorPoint = CGPointMake(0, 0.5);
             rightLayer.frame = CGRectMake(frame.size.width/2, 0, frame.size.width/2, frame.size.height);
-            [self.layer addSublayer:rightLayer.layer];
+            [self addSubview:rightLayer];
             rightLayer.layer.doubleSided = NO;
             
             if (i == self.imageArray.count - 1) {
                 rightLayer.layer.doubleSided = YES;
             }
             [self.photoArray insertObject:rightLayer atIndex:0];
+            [rightLayer release];
     
             // leftlayer
             PaperLayer *leftLayer = [[PaperLayer alloc] initWithFrame:CGRectMake(0, 0, frame.size.width/2, frame.size.height) paperType:PaperLayerLeft];
-            leftLayer.image = [self.imageArray objectAtIndex:i];
+            
             leftLayer.layer.anchorPoint = CGPointMake(1.0f, 0.5f);
             if (i == self.imageArray.count - 1 || i == 0) {
                 leftLayer.frame = CGRectMake(0, 0, frame.size.width/2, frame.size.height);
             }else{
                 leftLayer.frame = CGRectMake(0, 0, frame.size.width/2 + 0.5, frame.size.height);
             }
-            [self.layer addSublayer:leftLayer.layer];
+            [self addSubview:leftLayer];
+            
             leftLayer.layer.doubleSided = NO;
             
             if (i == 0) {
@@ -85,32 +90,45 @@
             }
             
             [self.photoArray insertObject:leftLayer atIndex:0];
+            [leftLayer release];
         }
+        
+        int startIndex = self.pageIndex - VIEW_PRELOAD_NUM/2;
+        if (startIndex < 0) {
+            startIndex = -startIndex;
+        }
+        
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for(int i = 0; i < self.photoArray.count; i+=2){
+                NSInteger index = i/2;
+                PaperLayer *leftLayer = (PaperLayer *)[self.photoArray objectAtIndex:i];
+                PaperLayer *rightLayer =  (PaperLayer *)[self.photoArray objectAtIndex:i + 1];
+                [rightLayer setImage:[UIImage imageWithContentsOfFile:[self.imageArray objectAtIndex:index]]];
+                [leftLayer setImage:[UIImage imageWithContentsOfFile:[self.imageArray objectAtIndex:index]]];
+            }
+        });
+
+        
+       
 
         [self resetViews];
         
-        
-        // 手势接收View
-        gestureView = [[UIView alloc] initWithFrame:self.bounds];
-        [self addSubview:gestureView];
-        [gestureView release];
-        
-        
         // 滑动翻页手势
         panGesture = [[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(paningGestureReceive:)]autorelease];
-        [gestureView addGestureRecognizer:panGesture];
+        [self addGestureRecognizer:panGesture];
         panGesture.minimumNumberOfTouches = 1;
         panGesture.maximumNumberOfTouches = 1;
         
     
         // 双指捏合手势
         pinchGesture = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGestureReceive:)] autorelease];
-        [gestureView addGestureRecognizer:pinchGesture];
+        [self addGestureRecognizer:pinchGesture];
         [pinchGesture requireGestureRecognizerToFail:panGesture];
         
         // 点击手势
         UITapGestureRecognizer *tapGesture = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureReceive:)] autorelease];
-        [gestureView addGestureRecognizer:tapGesture];
+        [self addGestureRecognizer:tapGesture];
         tapGesture.numberOfTapsRequired = 1;
         tapGesture.numberOfTouchesRequired = 1;
         [tapGesture requireGestureRecognizerToFail:panGesture];
@@ -119,22 +137,22 @@
     return self;
 }
 
+- (void) setPageIndex:(NSInteger)pageIndex{
+    _pageIndex = pageIndex;
+    
+    [self resetViewsAnimated:CGPointZero time:0.3];
+}
+
 - (void) setFrame:(CGRect)frame{
-    if (frame.size.width == self.frame.size.width) {
+    if (frame.size.width == self.frame.size.width && frame.size.height == self.frame.size.height) {
         [super setFrame:frame];
         return;
     }
     [super setFrame:frame];
     
     // 预先计算数据
-    zDistance = sinf(VIEW_MIN_ANGLE) * self.frame.size.width;
-    moveSensitivity = sinf(VIEW_MAX_ANGLE + VIEW_MIN_ANGLE) * self.frame.size.width;
-    moveSensitivity = VIEW_Z_PERSPECTIVE * moveSensitivity/(VIEW_Z_PERSPECTIVE - VIEW_Z_DISTANCE);
+    [self initData];
     
-    pinchSensitivity = moveSensitivity;
-    pinchSensitivity_ = self.frame.size.width - pinchSensitivity/2;
-    
-    gestureView.frame = self.bounds;
     for (int i = 0; i < self.photoArray.count; i += 2){
         PaperLayer *leftcell = [self.photoArray objectAtIndex:i];
         PaperLayer *rightcell = [self.photoArray objectAtIndex:i + 1];
@@ -148,6 +166,7 @@
         }
     }
     
+    [self resetViews];
 }
 
 
@@ -167,17 +186,17 @@
         // lTrans_1
         CATransform3D lTransform3D_1;
         float lCurrentDistance = 0;
-        if (index <= pageIndex) {
-            lCurrentDistance = (pageIndex - index) * zDistance;
+        if (index <= self.pageIndex) {
+            lCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            lCurrentDistance = -(index - pageIndex) * zDistance;
+            lCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
         
         // lTrans_2
         CATransform3D lTransform3D_2;
         float lCurrentAngle = 0;
-        if (index <= pageIndex) {
+        if (index <= self.pageIndex) {
             lCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE;
         }else{
             lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
@@ -194,16 +213,16 @@
         //rTrans_1
         CATransform3D rTransform3D_1;
         float rCurrentDistance = 0;
-        if (index < pageIndex) {
-            rCurrentDistance = (pageIndex - index) * zDistance;
+        if (index < self.pageIndex) {
+            rCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            rCurrentDistance = -(index - pageIndex) * zDistance;
+            rCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance);
         //rTrans_2
         CATransform3D rTransform3D_2;
         float rCurrentAngle = 0;
-        if (index < pageIndex) {
+        if (index < self.pageIndex) {
             rCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE;
         }else{
             rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
@@ -218,7 +237,7 @@
         PaperLayer *leftcell = ((PaperLayer *)[self.photoArray objectAtIndex:i]);
         PaperLayer *rightcell = ((PaperLayer *)[self.photoArray objectAtIndex:i+1]);
         
-        if (index == pageIndex) {
+        if (index == self.pageIndex) {
             rightcell.markView.alpha = 0;
             leftcell.markView.alpha = 0;
         }
@@ -227,25 +246,6 @@
 
 
 - (void) resetViewsAnimated:(CGPoint)touchPoint time:(NSTimeInterval)time{
-    float move = [self touchLengthMoveTo:touchPoint];
-    float pageRemainder = 0;
-    if (move > 0) {
-        pageRemainder = move - moveSensitivity * ((int)(move/moveSensitivity));
-    }else if(move < 0){
-        pageRemainder = (-move) + moveSensitivity * ((int)(move/moveSensitivity));
-    }
-    if (pageRemainder > moveSensitivity/2) {
-        if (move > 0) {
-            if (pageIndex + 1 < self.imageArray.count) {
-                pageIndex++;
-            }
-        }else{
-            if (pageIndex - 1 >= 0 ) {
-                pageIndex--;
-            }
-        }
-    }
-    
     [UIView animateWithDuration:time animations:^{
         [self resetViews];
     }];
@@ -345,17 +345,17 @@
         // lTrans_1
         CATransform3D lTransform3D_1;
         float lCurrentDistance = 0;
-        if (index <= pageIndex) {
-            lCurrentDistance = (pageIndex - index) * zDistance;
+        if (index <= self.pageIndex) {
+            lCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            lCurrentDistance = -(index - pageIndex) * zDistance;
+            lCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
         
         // lTrans_2
         CATransform3D lTransform3D_2;
         float lCurrentAngle = 0;
-        if (index <= pageIndex) {
+        if (index <= self.pageIndex) {
             lCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
         }else{
             lCurrentAngle = -VIEW_MIN_ANGLE;
@@ -372,16 +372,16 @@
         //rTrans_1
         CATransform3D rTransform3D_1;
         float rCurrentDistance = 0;
-        if (index < pageIndex) {
-            rCurrentDistance = (pageIndex - index) * zDistance;
+        if (index < self.pageIndex) {
+            rCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            rCurrentDistance = -(index - pageIndex) * zDistance;
+            rCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance);
         //rTrans_2
         CATransform3D rTransform3D_2;
         float rCurrentAngle = 0;
-        if (index < pageIndex) {
+        if (index < self.pageIndex) {
             rCurrentAngle = -M_PI + VIEW_MIN_ANGLE;
         }else{
             rCurrentAngle = -VIEW_MIN_ANGLE;
@@ -451,14 +451,14 @@
         // lTrans_1
         CATransform3D lTransform3D_1;
         float lCurrentDistance = 0;
-        lCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
+        lCurrentDistance = (self.pageIndex - index) * sinf(theta) * self.frame.size.width;
         lTransform3D_1 = CATransform3DMakeTranslation(0, 0, lCurrentDistance);
  
         
         // lTrans_2
         CATransform3D lTransform3D_2;
         float lCurrentAngle = 0;
-        if (index <= pageIndex) {
+        if (index <= self.pageIndex) {
             if (move < 0) {
                 // 捏合
                 if (self.paperStatus == PaperNormal) {
@@ -587,13 +587,13 @@
         //rTrans_1
         CATransform3D rTransform3D_1;
         float rCurrentDistance = 0;
-        rCurrentDistance = (pageIndex - index) * sinf(theta) * self.frame.size.width;
+        rCurrentDistance = (self.pageIndex - index) * sinf(theta) * self.frame.size.width;
         rTransform3D_1 = CATransform3DMakeTranslation(0, 0, rCurrentDistance);
         
         //rTrans_2
         CATransform3D rTransform3D_2;
         float rCurrentAngle = 0;
-        if (index < pageIndex) {            
+        if (index < self.pageIndex) {            
             if (move < 0) {
                 // 捏合
                 if (self.paperStatus == PaperNormal) {
@@ -691,7 +691,7 @@
     }
     
     // 当前页面的值
-    pageIndex = currentIndex;
+    self.pageIndex = currentIndex;
     
     float pageRemainder = 0;
     if (move > 0) {
@@ -707,7 +707,7 @@
     }
     
     // 下一页的预测值
-    NSInteger nextPageIndex = move > 0 ? (pageIndex + 1):(pageIndex - 1);
+    NSInteger nextPageIndex = move > 0 ? (self.pageIndex + 1):(self.pageIndex - 1);
     
     // 纠偏参数
     float x = 0,z = 0,x_ = 0,z_ = 0;
@@ -736,10 +736,10 @@
         CATransform3D lTransform3D_1;
         float lNextDistance = 0;
         float lCurrentDistance = 0;
-        if (index <= pageIndex) {
-            lCurrentDistance = (pageIndex - index) * zDistance;
+        if (index <= self.pageIndex) {
+            lCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            lCurrentDistance = -(index - pageIndex) * zDistance;
+            lCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         if (index <= nextPageIndex) {
             lNextDistance = (nextPageIndex - index) * zDistance;
@@ -751,7 +751,7 @@
         CATransform3D lTransform3D_2;
         float lNextAngle = 0;
         float lCurrentAngle = 0;
-        if (index <= pageIndex) {
+        if (index <= self.pageIndex) {
             lCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE;
         }else{
             lCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
@@ -768,16 +768,16 @@
         // 变换纠偏
         if (lNextAngle == lCurrentAngle) {
             if (move > 0) {
-                if (index <= pageIndex) {
-                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + (pageIndex - index) * zDistance);
-                }else if(index > pageIndex+1){
-                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, -z_ - (index - pageIndex - 1) * zDistance);
+                if (index <= self.pageIndex) {
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, z + (self.pageIndex - index) * zDistance);
+                }else if(index > self.pageIndex+1){
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, -z_ - (index - self.pageIndex - 1) * zDistance);
                 }
             }else if(move < 0){
-                if (index < pageIndex) {
-                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + (pageIndex - index - 1) * zDistance);
-                }else if(index > pageIndex){
-                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, -z - (index - pageIndex) * zDistance);
+                if (index < self.pageIndex) {
+                    lTransform3D_1 = CATransform3DMakeTranslation(x_ , 0, z_ + (self.pageIndex - index - 1) * zDistance);
+                }else if(index > self.pageIndex){
+                    lTransform3D_1 = CATransform3DMakeTranslation(x , 0, -z - (index - self.pageIndex) * zDistance);
                 }
             }
         }
@@ -798,10 +798,10 @@
         CATransform3D rTransform3D_1;
         float rNextDistance = 0;
         float rCurrentDistance = 0;
-        if (index < pageIndex) {
-            rCurrentDistance = (pageIndex - index) * zDistance;
+        if (index < self.pageIndex) {
+            rCurrentDistance = (self.pageIndex - index) * zDistance;
         }else{
-            rCurrentDistance = -(index - pageIndex) * zDistance;
+            rCurrentDistance = -(index - self.pageIndex) * zDistance;
         }
         if (index < nextPageIndex) {
             rNextDistance = (nextPageIndex - index) * zDistance;
@@ -813,7 +813,7 @@
         CATransform3D rTransform3D_2;
         float rNextAngle = 0;
         float rCurrentAngle = 0;
-        if (index < pageIndex) {
+        if (index < self.pageIndex) {
             rCurrentAngle = -M_PI_2 - VIEW_MAX_ANGLE;
         }else{
             rCurrentAngle = -M_PI_2 + VIEW_MAX_ANGLE;
@@ -830,17 +830,17 @@
         // 变换纠偏
         if (rNextAngle == rCurrentAngle) {
             if (move > 0) {
-                if (index < pageIndex) {
-                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, z + (pageIndex - index) *zDistance);
-                }else if(index > pageIndex ){
-                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - (index - pageIndex - 1) *zDistance);
+                if (index < self.pageIndex) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, z + (self.pageIndex - index) *zDistance);
+                }else if(index > self.pageIndex ){
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, -z_ - (index - self.pageIndex - 1) *zDistance);
                 }
                 
             }else if(move < 0 ){
-                if (index < pageIndex - 1) {
-                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_ + (pageIndex - index - 1) * zDistance);
-                }else if(index >= pageIndex){
-                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - (index - pageIndex) *zDistance);
+                if (index < self.pageIndex - 1) {
+                    rTransform3D_1 = CATransform3DMakeTranslation(x_, 0, z_ + (self.pageIndex - index - 1) * zDistance);
+                }else if(index >= self.pageIndex){
+                    rTransform3D_1 = CATransform3DMakeTranslation(x, 0, -z - (index - self.pageIndex) *zDistance);
                 }
             }
         }        
@@ -858,17 +858,17 @@
         PaperLayer *leftcell = ((PaperLayer *)[self.photoArray objectAtIndex:i]);
         PaperLayer *rightcell = ((PaperLayer *)[self.photoArray objectAtIndex:i + 1]);
         if (move > 0) {
-            if (index == pageIndex) {
+            if (index == self.pageIndex) {
                 rightcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
             }
-            if (index == pageIndex + 1) {
+            if (index == self.pageIndex + 1) {
                 leftcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
             }
         }else if(move < 0){
-            if (index == pageIndex) {
+            if (index == self.pageIndex) {
                 leftcell.markView.alpha = VIEW_ALPHA * pageRemainder/moveSensitivity;
             }
-            if (index == pageIndex - 1) {
+            if (index == self.pageIndex - 1) {
                 rightcell.markView.alpha = VIEW_ALPHA - VIEW_ALPHA * pageRemainder/moveSensitivity;
             }
         }
@@ -917,6 +917,27 @@
     }
 }
 
+- (void) preloadImages{
+    float move = [self touchLengthMoveTo:endTouch];
+    float pageRemainder = 0;
+    if (move > 0) {
+        pageRemainder = move - moveSensitivity * ((int)(move/moveSensitivity));
+    }else if(move < 0){
+        pageRemainder = (-move) + moveSensitivity * ((int)(move/moveSensitivity));
+    }
+    if (pageRemainder > moveSensitivity/2) {
+        if (move > 0) {
+            if (self.pageIndex + 1 < self.imageArray.count) {
+                self.pageIndex++;
+            }
+        }else{
+            if (self.pageIndex - 1 >= 0 ) {
+                self.pageIndex--;
+            }
+        }
+    }
+}
+
 // 滑动
 - (void)paningGestureReceive:(UIPanGestureRecognizer *)recoginzer{
     if (isPinching || self.paperStatus == PaperFold) {
@@ -930,14 +951,16 @@
         }
         endTouch = [recoginzer locationOfTouch:0 inView:self];
         startTouch = endTouch;
-        startPageIndex = pageIndex;
+        startPageIndex = self.pageIndex;
         isMoving = YES;
     }else if (recoginzer.state == UIGestureRecognizerStateEnded){
+        [self preloadImages];
         [self resetViewsAnimated:endTouch time:0.3];
         isMoving = NO;
         return;
         // cancal panning 回弹
     }else if (recoginzer.state == UIGestureRecognizerStateCancelled){
+        [self preloadImages];
         [self resetViewsAnimated:endTouch time:0.3];
         isMoving = NO;
         return;
@@ -945,12 +968,7 @@
         endTouch = [recoginzer locationOfTouch:0 inView:self];
         if (isMoving) {
             float move = [self touchLengthMoveTo:endTouch];
-            
-//            [UIView beginAnimations:@"FLIP" context:nil];
-//            [UIView setAnimationDuration:0.01];
             [self moveChange:move];
-//            [UIView commitAnimations];
-            
         }
     }
    
@@ -1023,12 +1041,7 @@
             
             scope = [self pinchLengthMoveTo:touch0 anotherPoint:touch1];
 
-//            [UIView beginAnimations:@"FLIP" context:nil];
-//            [UIView setAnimationDuration:0.01];
             [self pinchChange:scope];
-//            [UIView commitAnimations];
-            
-            
         }
     }
 }
